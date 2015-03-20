@@ -59,4 +59,16 @@ public class DefaultMongoContentStoreImpl<S, SID extends Serializable> implement
 			}
 		return null;
 	}
+
+	@Override
+	public void unsetContent(S property) {
+		if (property == null)
+			return;
+		Object contentId = BeanUtils.getFieldWithAnnotation(property, ContentId.class);
+		if (contentId == null)
+			return;
+
+		// delete any existing content object
+		gridOps.delete(query(whereFilename().is(contentId.toString())));
+	}
 }

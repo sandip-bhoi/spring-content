@@ -6,8 +6,8 @@ import org.springframework.content.common.repository.ContentStore;
 
 public interface ContentStoreInfo {
 	
-	public Class<? extends ContentStore> getInterface();
+	public Class<? extends ContentStore<Object, Serializable>> getInterface();
 	public Class<?> getDomainObjectClass();
-	public ContentStore getImpementation();
+	public ContentStore<Object, Serializable> getImpementation();
 	
 }

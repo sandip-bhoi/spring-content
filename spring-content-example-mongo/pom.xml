@@ -3,7 +3,6 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.example</groupId>
 	<artifactId>spring-content-example-mongo</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
 	<parent>
 		<groupId>org.springframework.content</groupId>
 		<artifactId>spring-content</artifactId>
@@ -19,7 +18,6 @@
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter</artifactId>
-			<version>1.2.1.RELEASE</version>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.content</groupId>
@@ -29,22 +27,18 @@
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-web</artifactId>
-			<version>1.2.1.RELEASE</version>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-data-mongodb</artifactId>
-			<version>1.2.1.RELEASE</version>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-test</artifactId>
-			<version>1.2.1.RELEASE</version>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-data-rest</artifactId>
-			<version>1.2.1.RELEASE</version>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.content</groupId>

@@ -1,8 +1,8 @@
 package internal.org.springframework.content.common.storeservice;
 
+import java.io.Serializable;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -12,7 +12,6 @@ import org.springframework.content.common.repository.ContentStore;
 import org.springframework.content.common.repository.factory.ContentStoreFactory;
 import org.springframework.content.common.storeservice.ContentStoreInfo;
 import org.springframework.content.common.storeservice.ContentStoreService;
-import org.springframework.util.ClassUtils;
 
 public class ContentStoreServiceImpl implements ContentStoreService {
 
@@ -30,7 +29,7 @@ public class ContentStoreServiceImpl implements ContentStoreService {
 		}
 	}
 	
-	private Class<?> getDomainObjectClass(Class<? extends ContentStore> contentStoreInterface) {
+	private Class<?> getDomainObjectClass(Class<? extends ContentStore<Object,Serializable>> contentStoreInterface) {
 		Type[] genericInterfaces = contentStoreInterface.getGenericInterfaces();
 		for (Type genericInterface : genericInterfaces) {
 			if (genericInterface instanceof ParameterizedType) {

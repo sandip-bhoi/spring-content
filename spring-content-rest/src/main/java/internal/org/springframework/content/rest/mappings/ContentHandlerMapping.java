@@ -1,37 +1,29 @@
 package internal.org.springframework.content.rest.mappings;
 
-import javax.servlet.http.HttpServletRequest;
-
 import internal.org.springframework.content.rest.annotations.ContentRestController;
 import internal.org.springframework.content.rest.utils.PersistentEntityUtils;
 import internal.org.springframework.content.rest.utils.RepositoryUtils;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.springframework.content.annotations.Content;
-import org.springframework.content.common.storeservice.ContentStoreService;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.data.mapping.PersistentEntity;
 import org.springframework.data.mapping.PersistentProperty;
 import org.springframework.data.repository.support.Repositories;
-import org.springframework.data.rest.core.invoke.RepositoryInvokerFactory;
 import org.springframework.data.rest.core.mapping.ResourceMappings;
 import org.springframework.data.rest.core.mapping.ResourceMetadata;
-import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
 
 public class ContentHandlerMapping extends RequestMappingHandlerMapping {
 
 	private Repositories repositories = null;
-	private RepositoryInvokerFactory repositoryInvokerFactory;
 	private ResourceMappings repositoryMappings;
-	private ContentStoreService storeService = null;
 	
-	public ContentHandlerMapping(ContentStoreService storeService, Repositories repositories ,
-								 RepositoryInvokerFactory repositoryInvokerFactory, ResourceMappings repositoryMappings) {
-		this.storeService = storeService;
+	public ContentHandlerMapping(Repositories repositories, ResourceMappings repositoryMappings) {
 		this.repositories = repositories;
-		this.repositoryInvokerFactory = repositoryInvokerFactory;
 		this.repositoryMappings = repositoryMappings;
 		setOrder(Ordered.LOWEST_PRECEDENCE - 200);
 	}

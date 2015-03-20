@@ -1,5 +1,7 @@
 package internal.org.springframework.content.common.utils;
 
+import java.beans.Introspector;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -7,12 +9,49 @@ import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.support.GenericBeanDefinition;
 import org.springframework.content.common.config.ContentRepositoryConfiguration;
+import org.springframework.core.annotation.AnnotationAttributes;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.util.Assert;
+import org.springframework.util.ClassUtils;
 
 public class ContentRepositoryUtils {
 
-	public static Set<GenericBeanDefinition> getContentRepositoryCandidates(ResourceLoader loader, Iterable<String> basePackages) {
+	private static final String BASE_PACKAGES = "basePackages";
+	private static final String BASE_PACKAGE_CLASSES = "basePackageClasses";
+	private static final String CONTENT_REPOSITORY_FACTORY_BEAN_CLASS = "contentRepositoryFactoryBeanClass";
+	
+	public static String[] getBasePackages(AnnotationAttributes attributes, String[] defaultPackages) {
+		
+		String[] value = attributes.getStringArray("value");
+		String[] basePackages = attributes.getStringArray(BASE_PACKAGES);
+		Class<?>[] basePackageClasses = attributes.getClassArray(BASE_PACKAGE_CLASSES);
+
+		// Default configuration - return package of annotated class
+		if (value.length == 0 && basePackages.length == 0 && basePackageClasses.length == 0) {
+			return defaultPackages;
+		}
+
+		Set<String> packages = new HashSet<String>();
+		packages.addAll(Arrays.asList(value));
+		packages.addAll(Arrays.asList(basePackages));
+
+		for (Class<?> typeName : basePackageClasses) {
+			packages.add(ClassUtils.getPackageName(typeName));
+		}
+
+		return packages.toArray(new String[] {});
+	}
+
+	public static String getRepositoryFactoryBeanName(AnnotationAttributes attributes) {
+		return attributes.getClass(CONTENT_REPOSITORY_FACTORY_BEAN_CLASS).getName();
+	}
+	
+	public static String getRepositoryBeanName(BeanDefinition definition) {
+		String beanName = ClassUtils.getShortName(definition.getBeanClassName());
+		return Introspector.decapitalize(beanName);
+	}
+	
+	public static Set<GenericBeanDefinition> getContentRepositoryCandidates(ResourceLoader loader, String[] basePackages) {
 		ContentRepositoryCandidateComponentProvider scanner = new ContentRepositoryCandidateComponentProvider(false);
 		//scanner.setConsiderNestedRepositoryInterfaces(shouldConsiderNestedRepositories());
 		scanner.setResourceLoader(loader);
@@ -39,37 +78,11 @@ public class ContentRepositoryUtils {
 		Assert.notNull(configuration, "ContentRepositoryConfiguration<?> must not be null!");
 
 		String factoryBeanName = configuration.getRepositoryFactoryBeanName();
-		/*factoryBeanName = StringUtils.hasText(factoryBeanName) ? factoryBeanName : extension
-				.getRepositoryFactoryClassName();*/
 
 		BeanDefinitionBuilder builder = BeanDefinitionBuilder.rootBeanDefinition(factoryBeanName);
 
 		builder.getRawBeanDefinition().setSource(configuration.getSource());
 		builder.addPropertyValue("contentStoreInterface", configuration.getRepositoryInterface());
-		//builder.addPropertyValue("contentStoreService", new RuntimeBeanNameReference("contentStoreService"));
-		//builder.addPropertyValue("queryLookupStrategyKey", configuration.getQueryLookupStrategyKey());
-		//builder.addPropertyValue("lazyInit", configuration.isLazyInit());
-
-		/*NamedQueriesBeanDefinitionBuilder definitionBuilder = new NamedQueriesBeanDefinitionBuilder(
-				extension.getDefaultNamedQueryLocation());
-
-		if (StringUtils.hasText(configuration.getNamedQueriesLocation())) {
-			definitionBuilder.setLocations(configuration.getNamedQueriesLocation());
-		}
-
-		builder.addPropertyValue("namedQueries", definitionBuilder.build(configuration.getSource()));
-
-		String customImplementationBeanName = registerCustomImplementation(configuration);
-
-		if (customImplementationBeanName != null) {
-			builder.addPropertyReference("customImplementation", customImplementationBeanName);
-			builder.addDependsOn(customImplementationBeanName);
-		}*/
-
-		/*RootBeanDefinition evaluationContextProviderDefinition = new RootBeanDefinition(ExtensionAwareEvaluationContextProvider.class);
-		evaluationContextProviderDefinition.setSource(configuration.getSource());
-
-		builder.addPropertyValue("evaluationContextProvider", evaluationContextProviderDefinition);*/
 
 		return builder;
 		

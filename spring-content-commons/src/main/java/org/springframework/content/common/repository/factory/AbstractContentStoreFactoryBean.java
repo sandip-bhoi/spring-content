@@ -6,10 +6,8 @@ import org.springframework.aop.framework.ProxyFactory;
 import org.springframework.beans.factory.BeanClassLoaderAware;
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.InitializingBean;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.content.common.repository.ContentStore;
-import org.springframework.content.common.storeservice.ContentStoreService;
 import org.springframework.util.Assert;
 
 public abstract class AbstractContentStoreFactoryBean<T extends ContentStore<S, ID>, S, ID extends Serializable>
@@ -18,7 +16,7 @@ public abstract class AbstractContentStoreFactoryBean<T extends ContentStore<S, 
 	//private AbstractContentStoreFactory factory;
 
 	//private ContentStoreService contentStoreService;
-	private Class<? extends T> contentStoreInterface;
+	private Class<? extends ContentStore<Object, Serializable>> contentStoreInterface;
 	private ClassLoader classLoader;
 	
 	private T contentStore;
@@ -33,12 +31,12 @@ public abstract class AbstractContentStoreFactoryBean<T extends ContentStore<S, 
 	}*/
 
 	@Required
-	public void setContentStoreInterface(Class<? extends T> contentStoreInterface) {
+	public void setContentStoreInterface(Class<? extends ContentStore<Object, Serializable>> contentStoreInterface) {
 		Assert.notNull(contentStoreInterface);
 		this.contentStoreInterface = contentStoreInterface;
 	}
 	
-	public Class<? extends T> getContentStoreInterface() {
+	public Class<? extends ContentStore<Object, Serializable>> getContentStoreInterface() {
 		return this.contentStoreInterface;
 	}
 
@@ -47,8 +45,9 @@ public abstract class AbstractContentStoreFactoryBean<T extends ContentStore<S, 
 		this.classLoader = classLoader;
 	}
 
-	public ContentStore getContentStore() {
-		return getObject();
+	@SuppressWarnings("unchecked")
+	public ContentStore<Object,Serializable> getContentStore() {
+		return (ContentStore<Object, Serializable>) getObject();
 	}
 	
 	/*
@@ -91,6 +90,7 @@ public abstract class AbstractContentStoreFactoryBean<T extends ContentStore<S, 
 		return contentStore;
 	}
 
+	@SuppressWarnings("unchecked")
 	private T createContentStore() {
 		Object target = getContentStoreImpl();
 
@@ -99,7 +99,7 @@ public abstract class AbstractContentStoreFactoryBean<T extends ContentStore<S, 
 		result.setTarget(target);
 		result.setInterfaces(new Class[] { contentStoreInterface, ContentStore.class });
 
-		return (T) result.getProxy(classLoader);
+		return (T)result.getProxy(classLoader);
 	}
 
 	protected abstract Object getContentStoreImpl();

@@ -33,7 +33,15 @@ public class ContentStoreServiceFactoryBean implements FactoryBean<ContentStoreS
 		this.loader = resourceLoader;
 	}
 	
+	protected ResourceLoader getResourceLoader() {
+		return this.loader;
+	}
+	
 	protected void setBasePackages(Iterable<String> basePackages) {
 		this.basePackages = basePackages;
+	}
+	
+	protected Iterable<String> getBasePackages() {
+		return this.basePackages;
 	}
 }

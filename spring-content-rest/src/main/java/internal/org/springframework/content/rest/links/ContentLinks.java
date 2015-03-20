@@ -22,7 +22,7 @@ public class ContentLinks  {
 	}
 
 	public Link linkToContent(final Object content) {
-		return new Link(linkFor().slash(new Identifiable() {
+		return new Link(linkFor().slash(new Identifiable<Serializable>() {
 
 			public Serializable getId() {
 				return BeanUtils.getFieldWithAnnotation(content, ContentId.class).toString();

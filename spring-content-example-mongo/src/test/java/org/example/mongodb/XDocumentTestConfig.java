@@ -1,7 +1,5 @@
 package org.example.mongodb;
 
-import internal.org.springframework.content.factory.MongoMixinRepositoryFactoryBean;
-
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -15,7 +13,7 @@ import com.mongodb.MongoClient;
 
 @Configuration
 @ComponentScan
-@EnableMongoRepositories(repositoryFactoryBeanClass=MongoMixinRepositoryFactoryBean.class)
+@EnableMongoRepositories
 public class XDocumentTestConfig extends AbstractMongoConfiguration {
 
 	@Bean

@@ -1,10 +1,13 @@
-package internal.org.springframework.content.rest.config;
 
-import java.beans.PropertyDescriptor;
-import java.lang.reflect.Field;
+package internal.org.springframework.content.rest.config;
 
 import internal.org.springframework.content.rest.annotations.ContentRestController;
 import internal.org.springframework.content.rest.mappings.ContentHandlerMapping;
+
+import java.beans.PropertyDescriptor;
+import java.lang.reflect.Field;
+import java.net.URI;
+import java.util.List;
 
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.BeanWrapperImpl;
@@ -20,15 +23,20 @@ import org.springframework.data.mapping.PersistentProperty;
 import org.springframework.data.repository.support.Repositories;
 import org.springframework.data.rest.core.invoke.RepositoryInvokerFactory;
 import org.springframework.data.rest.core.mapping.ResourceMappings;
+import org.springframework.data.rest.webmvc.BaseUri;
 import org.springframework.data.rest.webmvc.PersistentEntityResource;
+import org.springframework.data.rest.webmvc.config.ResourceMetadataHandlerMethodArgumentResolver;
+import org.springframework.data.rest.webmvc.config.RootResourceInformationHandlerMethodArgumentResolver;
+import org.springframework.data.web.config.HateoasAwareSpringDataWebConfiguration;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.ResourceProcessor;
 import org.springframework.util.Assert;
+import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
 
 @Configuration
 @ComponentScan(basePackageClasses = ContentRestController.class)
-public class ContentRestConfiguration {
+public class ContentRestConfiguration extends HateoasAwareSpringDataWebConfiguration {
 	
 	@Autowired
 	Repositories repositories;
@@ -44,7 +52,21 @@ public class ContentRestConfiguration {
 	
 	@Bean
 	RequestMappingHandlerMapping contentHandlerMapping() {
-		return new ContentHandlerMapping(storeService, repositories, repositoryInvokerFactory, repositoryMappings);
+		return new ContentHandlerMapping(repositories, repositoryMappings);
+	}
+
+	@Override
+	public void addArgumentResolvers(List<HandlerMethodArgumentResolver> argumentResolvers) {
+		super.addArgumentResolvers(argumentResolvers);
+		argumentResolvers.add(rootResourceInformationArgumentResolver());
+	}
+	
+	HandlerMethodArgumentResolver rootResourceInformationArgumentResolver() {
+		return new RootResourceInformationHandlerMethodArgumentResolver(repositories, repositoryInvokerFactory, resourceMetadataArgumentResolver());
+	}
+	
+	ResourceMetadataHandlerMethodArgumentResolver resourceMetadataArgumentResolver() {
+		return new ResourceMetadataHandlerMethodArgumentResolver(repositories, repositoryMappings, new BaseUri(URI.create("")));
 	}
 	
 	@Bean 

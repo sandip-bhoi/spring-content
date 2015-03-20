@@ -42,6 +42,7 @@ public class ContentCrudIntegrationTest {
 
     private XDocument canSetDoc;
     private XDocument canGetDoc;
+    private XDocument canDelDoc;
     
     @Before
     public void setUp() throws Exception {
@@ -64,6 +65,15 @@ public class ContentCrudIntegrationTest {
     	canGetDoc.getContent().setMimeType("plain/text");
     	contentStore.setContent(canGetDoc.getContent(), new ByteArrayInputStream("This is plain text content!".getBytes()));
     	docRepo.save(canGetDoc);
+
+    	// create a doc that can delete content from
+    	canDelDoc = new XDocument();
+    	canDelDoc.setTitle("Document with content for deletion");
+    	docRepo.save(canDelDoc);
+    	canDelDoc.setContent(new XContent());
+    	canDelDoc.getContent().setMimeType("plain/text");
+    	contentStore.setContent(canDelDoc.getContent(), new ByteArrayInputStream("This is plain text content!".getBytes()));
+    	docRepo.save(canDelDoc);
     }
 
     @Test
@@ -103,5 +113,33 @@ public class ContentCrudIntegrationTest {
     		.assertThat()
     			.contentType(Matchers.startsWith("plain/text"))
     			.body(Matchers.equalTo("This is plain text content!"));
+    }
+
+    @Test
+    public void canDeleteContent() {
+    	JsonPath response = 
+		    when()
+		        .get("/documents/" + canDelDoc.getId())
+		    .then()
+		    	.statusCode(HttpStatus.SC_OK)
+		    	.extract()
+		    		.jsonPath();
+    	
+    	Assert.assertNotNull(response.get("_links.content"));
+    	Assert.assertNotNull(response.get("_links.content.href"));
+
+    	String contentUrl = response.get("_links.content.href");
+    	when()
+    		.delete(contentUrl)
+    	.then()
+    		.assertThat()
+    			.statusCode(HttpStatus.SC_NO_CONTENT);
+
+    	// and make sure that it is really gone
+    	when()
+    		.get(contentUrl)
+    	.then()
+    		.assertThat()
+    			.statusCode(HttpStatus.SC_NOT_FOUND);
     }
 }
