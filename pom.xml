@@ -24,10 +24,11 @@
 		<module>./spring-content-mongo</module>
 		<module>./spring-content-rest</module>
 		<module>./spring-content-example-mongo</module>
+		<module>./spring-boot-starter-content-rest</module>
 	</modules>
 
 	<!-- Every Spring Data NGIS project should compile with 1.7, target 1.7 -->
-	<!-- and attach and publish sources -->
+	<!-- TODO: and attach and publish sources -->
 	<build>
 		<plugins>
 			<plugin>
