@@ -16,7 +16,7 @@ import com.mongodb.MongoClient;
 @ComponentScan
 @EnableMongoRepositories
 @EnableMongoContentStores
-public class ClaimTestsConfig extends AbstractMongoConfiguration {
+public class ClaimTestConfig extends AbstractMongoConfiguration {
 
 	@Bean
 	public GridFsTemplate gridFsTemplate() throws Exception {

@@ -7,6 +7,11 @@
   </parent>
   <artifactId>spring-boot-starter-content-mongo</artifactId>
   <dependencies>
+<!--   	<dependency> -->
+<!--   		<groupId>org.springframework.content</groupId> -->
+<!--   		<artifactId>spring-content-commons</artifactId> -->
+<!--   		<version>0.0.1-SNAPSHOT</version> -->
+<!--   	</dependency> -->
   	<dependency>
   		<groupId>org.springframework.content</groupId>
   		<artifactId>spring-content-mongo</artifactId>

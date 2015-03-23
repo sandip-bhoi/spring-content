@@ -6,7 +6,10 @@ import internal.org.springframework.content.common.utils.ContentRepositoryUtils;
 import java.lang.annotation.Annotation;
 import java.util.Set;
 
+import org.springframework.beans.BeansException;
 import org.springframework.beans.MutablePropertyValues;
+import org.springframework.beans.factory.BeanFactory;
+import org.springframework.beans.factory.BeanFactoryAware;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
@@ -19,9 +22,10 @@ import org.springframework.core.type.AnnotationMetadata;
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
 
-public abstract class AbstractContentStoreBeanDefinitionRegistrar implements ImportBeanDefinitionRegistrar, ResourceLoaderAware {
+public abstract class AbstractContentStoreBeanDefinitionRegistrar implements ImportBeanDefinitionRegistrar, ResourceLoaderAware, BeanFactoryAware {
 
 	private ResourceLoader resourceLoader;
+	private BeanFactory beanFactory;
 	
 	/* (non-Javadoc)
 	 * @see org.springframework.context.ResourceLoaderAware#setResourceLoader(org.springframework.core.io.ResourceLoader)
@@ -30,6 +34,19 @@ public abstract class AbstractContentStoreBeanDefinitionRegistrar implements Imp
 		this.resourceLoader = resourceLoader;
 	}
 
+	protected ResourceLoader getResourceLoader() {
+		return this.resourceLoader;
+	}
+	
+	@Override
+	public void setBeanFactory(BeanFactory beanFactory) throws BeansException {
+		this.beanFactory = beanFactory;
+	}
+
+	protected BeanFactory getBeanFactory() {
+		return this.beanFactory;
+	}
+	
 	/* (non-Javadoc)
 	 * @see org.springframework.context.annotation.ImportBeanDefinitionRegistrar#registerBeanDefinitions(org.springframework.core.type.AnnotationMetadata, org.springframework.beans.factory.support.BeanDefinitionRegistry)
 	 */
@@ -38,17 +55,21 @@ public abstract class AbstractContentStoreBeanDefinitionRegistrar implements Imp
 		Assert.notNull(registry, "BeanDefinitionRegistry must not be null!");
 
 		// Guard against calls for sub-classes
-		if (importingClassMetadata.getAnnotationAttributes(getAnnotation().getName()) == null) {
-			return;
-		}
+		//if (importingClassMetadata.getAnnotationAttributes(getAnnotation().getName()) == null) {
+		//	return;
+		//}
 		
-		AnnotationAttributes attributes = new AnnotationAttributes(importingClassMetadata.getAnnotationAttributes(getAnnotation().getName()));
-		
-		String[] basePackages = ContentRepositoryUtils.getBasePackages(attributes, /* default*/ new String[] { ClassUtils.getPackageName(importingClassMetadata.getClassName()) });
-		Set<GenericBeanDefinition> definitions = ContentRepositoryUtils.getContentRepositoryCandidates(resourceLoader, basePackages);
-
-		BeanDefinition storeServiceBeanDef = createContentStoreServiceBeanDefinition(definitions);
+		BeanDefinition storeServiceBeanDef = createContentStoreServiceBeanDefinition();
 		registry.registerBeanDefinition("contentStoreService", storeServiceBeanDef);
+
+		registerContentStoreBeanDefinitions(importingClassMetadata, registry);
+	}
+
+	protected void registerContentStoreBeanDefinitions(AnnotationMetadata importingClassMetadata, BeanDefinitionRegistry registry) {
+		AnnotationAttributes attributes = new AnnotationAttributes(importingClassMetadata.getAnnotationAttributes(getAnnotation().getName()));
+		String[] basePackages = this.getBasePackages(attributes, importingClassMetadata);
+		
+		Set<GenericBeanDefinition> definitions = ContentRepositoryUtils.getContentRepositoryCandidates(resourceLoader, basePackages);
 
 		for (BeanDefinition definition : definitions) {
 		
@@ -63,7 +84,12 @@ public abstract class AbstractContentStoreBeanDefinitionRegistrar implements Imp
 		}
 	}
 	
-	private BeanDefinition createContentStoreServiceBeanDefinition(Set<GenericBeanDefinition> storeBeanDefs) {
+	// default implementation for non-autoconfigured clients
+	protected String[] getBasePackages(AnnotationAttributes attributes, AnnotationMetadata importingClassMetadata) {
+		return ContentRepositoryUtils.getBasePackages(attributes, /* default*/ new String[] { ClassUtils.getPackageName(importingClassMetadata.getClassName()) });
+	}
+	
+	private BeanDefinition createContentStoreServiceBeanDefinition() {
 		GenericBeanDefinition beanDef = new GenericBeanDefinition();
 		beanDef.setBeanClass(ContentStoreServiceImpl.class);
 

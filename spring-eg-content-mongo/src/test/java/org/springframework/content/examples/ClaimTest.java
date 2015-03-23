@@ -1,6 +1,5 @@
 package org.springframework.content.examples;
 
-
 import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
@@ -14,16 +13,12 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.SpringApplicationConfiguration;
-import org.springframework.content.examples.Claim;
-import org.springframework.content.examples.ClaimForm;
-import org.springframework.content.examples.ClaimFormStore;
-import org.springframework.content.examples.ClaimRepository;
+import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringApplicationConfiguration(classes = org.springframework.content.examples.Application.class)   
-public class ClaimTests {
+@ContextConfiguration(classes = { ClaimTestConfig.class })
+public class ClaimTest {
 
 	@Autowired
 	private ClaimRepository claimRepo;
@@ -33,10 +28,6 @@ public class ClaimTests {
 
 	@Before
 	public void setUp() {
-		
-		// ensure auto-configuration has worked
-		Assert.assertNotNull(claimRepo);
-		Assert.assertNotNull(claimFormStore);
 		
 		// delete any existing claim forms
 		List<Claim> existingClaims = claimRepo.findAll();
