@@ -9,7 +9,7 @@ import org.springframework.hateoas.Resources;
 public class ContentResources extends Resources<Resource<Object>> {
 
 	public ContentResources(List<Resource<Object>> resources) {
-		super(resources, (Link[])null);
+		super(resources, new Link[] {});
 	}
 
 }

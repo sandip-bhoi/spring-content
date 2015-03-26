@@ -101,6 +101,25 @@ public class ContentCollectionPropertyRestController extends AbstractContentProp
 		return null;
 	}
 
+	@RequestMapping(value = BASE_MAPPING, method = RequestMethod.POST, headers = "content-type=multipart/form-data")
+	@ResponseBody
+	public ResponseEntity<Resource<?>> postMultipartContent(final HttpServletRequest request,
+									 final HttpServletResponse response,
+									 RootResourceInformation rootInfo,
+									 @PathVariable String repository, 
+									 @PathVariable String id, 
+									 @PathVariable String contentProperty,
+									 @RequestParam("file") MultipartFile multiPart)
+											 throws IOException, HttpRequestMethodNotSupportedException, InstantiationException, IllegalAccessException {
+
+		Object newContent = this.saveContentInternal(rootInfo, repository, id, contentProperty, multiPart.getContentType(), multiPart.getInputStream());
+		if (newContent != null) {
+			Resource<?> contentResource = toResource(request, newContent);
+			return new ResponseEntity<Resource<?>>(contentResource, HttpStatus.CREATED);
+		}
+		return null;
+	}
+
 	Resource<?> toResource(final HttpServletRequest request, Object newContent)
 			throws SecurityException, BeansException {
 		Link self = new Link(StringUtils.trimTrailingCharacter(request.getRequestURL().toString(), '/') + "/" + BeanUtils.getFieldWithAnnotation(newContent, ContentId.class));
@@ -117,18 +136,6 @@ public class ContentCollectionPropertyRestController extends AbstractContentProp
 			}
 		}
 		return resources;
-	}
-
-	@RequestMapping(value = BASE_MAPPING, method = RequestMethod.POST, headers = "content-type=multipart/form-data")
-	@ResponseBody
-	public void postMultipartContent(@PathVariable String repository, 
-							  @PathVariable String id, 
-							  @PathVariable String contentProperty,
-							  @RequestParam("file") MultipartFile multiPart)
-									  throws IOException, HttpRequestMethodNotSupportedException, InstantiationException, IllegalAccessException {
-
-		throw new UnsupportedOperationException();
-		//this.saveContentInternal(repository, id, contentProperty, contentId, multiPart.getContentType(), multiPart.getInputStream());
 	}
 
 	private Object saveContentInternal(RootResourceInformation rootInfo, 

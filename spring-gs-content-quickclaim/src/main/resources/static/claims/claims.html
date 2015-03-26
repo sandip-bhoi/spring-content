@@ -1,0 +1,31 @@
+<div class="container">
+	<div class="row">
+		<div class="col-xs-12">
+			<a class="btn btn-default pull-right" href="#/claim">New Claim</a>
+		</div>
+	</div>
+
+	<div class="row">
+		<div class="col-xs-12">
+			<h3>Claims</h3>
+			<table class="table">
+				<th>Last Name</th>
+				<th>First Name</th>
+				<th>Claim Form</th>
+				<th></th>
+				<th></th>
+				<tr ng-repeat="claim in claims">
+					<td>{{claim.firstName}}</td>
+					<td>{{claim.lastName}}</td>
+					<td><a class="btn-xs btn-default"
+						   type="application/pdf" 
+						   target="_new"
+						   ng-disabled="(claim._links.claimForm) ? false : true" 
+						   ng-href="{{claim._links.claimForm.href}}">View</a></td>
+					<td><button class="btn-xs btn-default" ng-click="onEditClaim(claim)">Edit</button></td>
+					<td><button class="btn-xs btn-default" ng-click="onDeleteClaim(claim)">Delete</button></td>
+				</tr>
+			</table>
+		</div>
+	</div>
+</div>

@@ -1,0 +1,33 @@
+{
+  "name": "file-ctrl",
+  "main": "file-ctrl.js",
+  "version": "0.0.1",
+  "homepage": "https://github.com/paulcwarren/file-ctrl",
+  "description": "angular file control",
+  "keywords": [
+    "angular",
+    "file",
+    "control"
+  ],
+  "authors": [
+    "Paul Warren"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "_release": "0.0.1",
+  "_resolution": {
+    "type": "version",
+    "tag": "v0.0.1",
+    "commit": "ce909de660bf0752c923890e4d9bd3ffd420b9c7"
+  },
+  "_source": "git://github.com/paulcwarren/file-ctrl.git",
+  "_target": "~0.0.1",
+  "_originalSource": "paulcwarren/file-ctrl",
+  "_direct": true
+}

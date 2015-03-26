@@ -1,0 +1,54 @@
+<div ng-show="debug">
+Editable: {{editable}}<br/>
+New Images: {{newImages | json}}<br/>
+Deleted Images: {{deletedImages | json}}
+</div>
+<table id="table" class="xtable">
+	<tr>
+		<td ng-repeat="image in images" class="xtd {{(editable) ? 'editable' : ''}}">
+			<img id="image{{$index}}" src="{{getImageUrl(image)}}" class="image {{(editable) ? 'editable-tgt' : ''}}"/>
+			<img id="delaction-image{{$index}}" src="/images/delete-16.png" class="delete-icon" ng-click="deletedImages.push(deleteImage(image, images))"/>
+		</td>
+		<td ng-repeat="newImage in newImages" class="xtd {{(editable) ? 'editable' : ''}}">
+			<img src="{{getImageUrl(newImage)}}" class="image {{(editable) ? 'editable-tgt' : ''}}"/>
+			<img src="file-ctrl/delete-16.png" class="delete-icon" ng-click="deleteImage(newImage, newImages)"/>
+		</td>
+		<td id="drop-zone" class="xtd drop-zone" ng-show="editable">
+			<div ng-click="addImage()">Drop zone</div>
+		</td>
+	</tr>
+</table>
+
+<style>
+// table overrides (to make the tr wrap)
+.xtable {
+	display: block;
+	width: {{totaWidth}}px;
+}
+.xtd {
+	display: inline-block;
+}
+
+.image {
+	margin: {{margin}}px {{margin}}px 0 0;
+	border: {{border}}px solid gray;
+	width:{{width}}px;
+	min-height: 65px;
+}
+
+.drop-zone {
+	background: #F8F8F8;
+	border: 5px dashed #DDD;
+	width: {{width}}px;
+	height: 65px; 
+	text-align: center;
+}
+.drop-zone.over {
+	border: 5px dashed blue;
+}
+.delete-icon {
+position: relative;
+  right: 25px;
+  top: -20px;
+}
+</style>

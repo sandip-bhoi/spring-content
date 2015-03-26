@@ -1,0 +1,53 @@
+<div class="container">
+	<div class="row">
+		<div class="col-xs-12">
+			<div class="pull-right">
+				<a class="btn btn-default" ng-click="ok()">OK</a>
+				<a class="btn btn-default" href="#/claims">Cancel</a>
+			</div>
+		</div>
+	</div>
+
+	<div class="row">
+		<div class="col-xs-12">	
+			<form>
+				<div class="form-group">
+					<label>First Name</label>
+					<input class="form-control" type="text" placeholder="First Name" ng-model="claim.firstName">	
+				</div>
+				<div class="form-group">
+					<label>Last Name</label>		
+					<input class="form-control" type="text" placeholder="Last Name" ng-model="claim.lastName">
+				</div>
+				<div class="form-group">
+					<label>Claim Form</label>
+					
+					<div>
+						<button class="btn btn-default" id="upfile1" style="cursor:pointer">{{claim.claimForm ? "Replace" : "Add"}}</button>
+						<input type="file" id="file1" name="file1" style="display:none" onchange="angular.element(this).scope().onFileSelected(this)"/>
+					</div>
+					<script>
+					$("#upfile1").click(function () {
+					    $("#file1").trigger('click');
+					});
+					</script>
+					
+					<div ng-show="!claim.claimForm && claimForm">
+						{{claimForm.name}}
+					</div>
+					<div ng-show="claim.claimForm && claimForm">
+						Replace existing {{claim.claimForm.mimeType}} ({{claim.claimForm.contentLength}}) bytes with '{{claimForm.name}}'?
+					</div>
+				</div>		
+				<div class="form-group">
+					<label>Claim Images</label>
+					<file-ctrl 	images="images"
+								deleted-images="deletedImages"
+								new-images="newImages"
+								editable="true" 
+								debug="false" />
+				</div>
+			</form>			
+		</div>
+	</div>
+</div>
