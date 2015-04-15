@@ -17,4 +17,4 @@
 - spring-eg-content-rest; example of spring-content-rest in use (on top of a mongo content store)
 
 ### Getting Started
-- [spring-quickclaim](https://bitbucket.org/paulcwarren/spring-content/src/ef9e0716a56310fac5e6390233a6cd73ad4a28e8/spring-gs-content-quickclaim/?at=master); example spring-boot based application based on an insurance companies claim system showing spring content and spring content REST in action
+- [spring-quickclaim](https://bitbucket.org/paulcwarren/spring-content/src/ef9e0716a56310fac5e6390233a6cd73ad4a28e8/spring-gs-content-quickclaim/readme.md?at=master); example spring-boot based application based on an insurance companies claim system showing spring content and spring content REST in action
