@@ -18,6 +18,15 @@ import com.mongodb.MongoClient;
 @EnableMongoContentStores
 public class ClaimTestConfig extends AbstractMongoConfiguration {
 
+//	@Override
+//	public CustomConversions customConversions() {
+//		List<Converter> converters = new ArrayList<>();
+//	    converters.add(new ObjectIdToLongConverter());
+//	    converters.add(new LongToObjectIdConverter());
+//	    CustomConversions customConversions = new CustomConversions(converters);
+//	    return customConversions;
+//	}
+
 	@Bean
 	public GridFsTemplate gridFsTemplate() throws Exception {
 		return new GridFsTemplate(mongoDbFactory(), mappingMongoConverter());

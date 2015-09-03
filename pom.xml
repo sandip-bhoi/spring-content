@@ -22,11 +22,15 @@
 	<modules>
 		<module>./spring-content-commons</module>
 		<module>./spring-content-mongo</module>
+		<module>./spring-content-jpa</module>
 		<module>./spring-content-rest</module>
 		<module>./spring-content-example-mongo</module>
-		<module>./spring-boot-starter-content-rest</module>
+		<module>./spring-boot-starter-content-jpa</module>
 		<module>./spring-boot-starter-content-mongo</module>
+		<module>./spring-boot-starter-content-rest</module>
+		<module>./spring-eg-content-commons</module>
 		<module>./spring-eg-content-mongo</module>
+		<module>./spring-eg-content-jpa</module>
 		<module>./spring-eg-starter-content-mongo</module>
 		<module>./spring-eg-content-rest</module>
 		<module>./spring-gs-content-quickclaim</module>

@@ -70,5 +70,10 @@ public class DefaultMongoContentStoreImpl<S, SID extends Serializable> implement
 
 		// delete any existing content object
 		gridOps.delete(query(whereFilename().is(contentId.toString())));
+
+		// reset content fields
+        BeanUtils.setFieldWithAnnotation(property, ContentId.class, null);
+        BeanUtils.setFieldWithAnnotation(property, ContentLength.class, 0);
+
 	}
 }

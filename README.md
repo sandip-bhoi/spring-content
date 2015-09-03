@@ -18,3 +18,7 @@
 
 ### Getting Started
 - [spring-quickclaim](https://bitbucket.org/paulcwarren/spring-content/src/ef9e0716a56310fac5e6390233a6cd73ad4a28e8/spring-gs-content-quickclaim/readme.md?at=master); example spring-boot based application based on an insurance companies claim system showing spring content and spring content REST in action
+
+## Todo
+- Add boot autoconfiguration to spring-boot-starter-content-rest so that ContentRestConfiguration is automatically picked up
+ 

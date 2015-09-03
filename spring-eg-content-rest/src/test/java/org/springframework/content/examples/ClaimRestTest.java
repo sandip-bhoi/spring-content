@@ -5,7 +5,6 @@ import static com.jayway.restassured.RestAssured.given;
 import static com.jayway.restassured.RestAssured.when;
 
 import java.io.ByteArrayInputStream;
-import java.util.List;
 
 import org.apache.http.HttpStatus;
 import org.hamcrest.Matchers;
@@ -48,7 +47,7 @@ public class ClaimRestTest {
         RestAssured.port = port;
     	
 		// delete any existing claim forms
-		List<Claim> existingClaims = claimRepo.findAll();
+		Iterable<Claim> existingClaims = claimRepo.findAll();
 		for (Claim existingClaim : existingClaims) {
 			claimFormStore.unsetContent(existingClaim.getClaimForm());
 		}
