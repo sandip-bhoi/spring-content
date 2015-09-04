@@ -95,8 +95,9 @@ public class ClaimRestTest {
 	    	.extract()
 	    		.jsonPath();
     	
-    	Assert.assertNotNull(response.get("links.find { link -> link.rel == 'self'}"));
-    	Assert.assertNotNull(response.get("links.find { link -> link.rel == 'self'}.href"));
+    	Assert.assertNotNull(response.get("_links"));
+    	Assert.assertNotNull(response.get("_links.self"));
+    	Assert.assertNotNull(response.get("_links.self.href"));
     }
 
     @Test

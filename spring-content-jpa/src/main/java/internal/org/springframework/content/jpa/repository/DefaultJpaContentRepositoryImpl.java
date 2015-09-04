@@ -75,7 +75,7 @@ public class DefaultJpaContentRepositoryImpl<S, SID extends Serializable> implem
 
 	@Override
 	public InputStream getContent(S property) {
-		String sql = "SELECT blob FROM BLOBS WHERE id=" + BeanUtils.getFieldWithAnnotation(property, ContentId.class);
+		String sql = "SELECT blob FROM BLOBS WHERE id='" + BeanUtils.getFieldWithAnnotation(property, ContentId.class) + "'";
 		ResultSet set = null;
 		try {
 	        set = datasource.getConnection().prepareCall(sql).executeQuery();
