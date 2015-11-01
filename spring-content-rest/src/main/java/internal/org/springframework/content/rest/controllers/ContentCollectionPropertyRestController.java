@@ -1,12 +1,5 @@
 package internal.org.springframework.content.rest.controllers;
 
-import internal.org.springframework.content.rest.annotations.ContentRestController;
-import internal.org.springframework.content.rest.links.ContentLinks;
-import internal.org.springframework.content.rest.links.ContentResource;
-import internal.org.springframework.content.rest.links.ContentResources;
-import internal.org.springframework.content.rest.utils.ContentStoreUtils;
-import internal.org.springframework.content.rest.utils.PersistentEntityUtils;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Array;
@@ -43,6 +36,13 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
+
+import internal.org.springframework.content.rest.annotations.ContentRestController;
+import internal.org.springframework.content.rest.links.ContentLinks;
+import internal.org.springframework.content.rest.links.ContentResource;
+import internal.org.springframework.content.rest.links.ContentResources;
+import internal.org.springframework.content.rest.utils.ContentStoreUtils;
+import internal.org.springframework.content.rest.utils.PersistentEntityUtils;
 
 @ContentRestController
 public class ContentCollectionPropertyRestController extends AbstractContentPropertyController {
@@ -93,7 +93,7 @@ public class ContentCollectionPropertyRestController extends AbstractContentProp
 									@PathVariable String contentProperty) 
 									throws IOException, HttpRequestMethodNotSupportedException, InstantiationException, IllegalAccessException {
 		
-		Object newContent = this.saveContentInternal(rootInfo, repository, id, contentProperty, request.getHeader("Content-Type"), request.getInputStream());
+		Object newContent = this.saveContentInternal(rootInfo, repository, id, contentProperty, request.getRequestURI(), request.getHeader("Content-Type"), request.getInputStream());
 		if (newContent != null) {
 			Resource<?> contentResource = toResource(request, newContent);
 			return new ResponseEntity<Resource<?>>(contentResource, HttpStatus.CREATED);
@@ -112,7 +112,7 @@ public class ContentCollectionPropertyRestController extends AbstractContentProp
 									 @RequestParam("file") MultipartFile multiPart)
 											 throws IOException, HttpRequestMethodNotSupportedException, InstantiationException, IllegalAccessException {
 
-		Object newContent = this.saveContentInternal(rootInfo, repository, id, contentProperty, multiPart.getContentType(), multiPart.getInputStream());
+		Object newContent = this.saveContentInternal(rootInfo, repository, id, contentProperty, request.getRequestURI(), multiPart.getContentType(), multiPart.getInputStream());
 		if (newContent != null) {
 			Resource<?> contentResource = toResource(request, newContent);
 			return new ResponseEntity<Resource<?>>(contentResource, HttpStatus.CREATED);
@@ -142,6 +142,7 @@ public class ContentCollectionPropertyRestController extends AbstractContentProp
 									 String repository,
 									 String id, 
 									 String contentProperty,  
+									 String requestUri,
 									 String mimeType,
 									 InputStream stream) 
 			throws HttpRequestMethodNotSupportedException {
@@ -154,11 +155,28 @@ public class ContentCollectionPropertyRestController extends AbstractContentProp
 		
 		PersistentProperty<?> prop = this.getContentPropertyDefinition(entity, contentProperty);
 
-		ContentStoreInfo info = ContentStoreUtils.findContentStore(storeService, repository);
-
 		BeanWrapper<Object> wrapper = BeanWrapper.create(domainObj, null);
 		Object propVal = wrapper.getProperty(prop);
+		Class<?> contentEntityClass = null;
 		
+		// null single-valued content property
+		if (!PersistentEntityUtils.isPropertyMultiValued(prop)) {
+			contentEntityClass = prop.getActualType();
+		} 
+		// null multi-valued content property
+		else if (PersistentEntityUtils.isPropertyMultiValued(prop)) {
+			if (prop.isArray()) {
+				contentEntityClass = propVal.getClass().getComponentType();
+			}
+			else if (prop.isCollectionLike()) {
+				contentEntityClass = prop.getActualType();
+			}
+		}
+		
+		ContentStoreInfo info = ContentStoreUtils.findContentStore(storeService, contentEntityClass);
+		if (info == null)
+			throw new IllegalStateException(String.format("Unable to find a content store for %s", repository));
+
 		// null single-valued content property
 		if (propVal == null && !PersistentEntityUtils.isPropertyMultiValued(prop)) {
 			propVal = instantiate(info.getDomainObjectClass());

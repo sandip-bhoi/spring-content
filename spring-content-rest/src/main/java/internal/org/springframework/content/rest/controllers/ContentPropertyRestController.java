@@ -1,8 +1,5 @@
 package internal.org.springframework.content.rest.controllers;
 
-import internal.org.springframework.content.rest.annotations.ContentRestController;
-import internal.org.springframework.content.rest.utils.ContentStoreUtils;
-
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -27,6 +24,10 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
+
+import internal.org.springframework.content.rest.annotations.ContentRestController;
+import internal.org.springframework.content.rest.utils.ContentPropertyUtils;
+import internal.org.springframework.content.rest.utils.ContentStoreUtils;
 
 @ContentRestController
 public class ContentPropertyRestController extends AbstractContentPropertyController {
@@ -56,7 +57,9 @@ public class ContentPropertyRestController extends AbstractContentPropertyContro
 		if (BeanUtils.hasFieldWithAnnotation(contentPropertyValue, ContentLength.class))
 			headers.add("Content-Length", BeanUtils.getFieldWithAnnotation(contentPropertyValue, ContentLength.class).toString());
 		
-		ContentStoreInfo info = ContentStoreUtils.findContentStore(storeService, repository);
+		Class<?> contentEntityClass = ContentPropertyUtils.getContentPropertyType(property);
+		
+		ContentStoreInfo info = ContentStoreUtils.findContentStore(storeService, contentEntityClass);
 		InputStreamResource inputStreamResource = new InputStreamResource(info.getImpementation().getContent(contentPropertyValue));
 		//httpHeaders.setContentLength(contentLengthOfStream);
 		return new ResponseEntity<InputStreamResource>(inputStreamResource, headers, HttpStatus.OK);
@@ -113,7 +116,9 @@ public class ContentPropertyRestController extends AbstractContentPropertyContro
 
 		Object contentPropertyValue = getContentProperty(domainObj, property, contentId); 
 		
-		ContentStoreInfo info = ContentStoreUtils.findContentStore(storeService, repository);
+		Class<?> contentEntityClass = ContentPropertyUtils.getContentPropertyType(property);
+		
+		ContentStoreInfo info = ContentStoreUtils.findContentStore(storeService, contentEntityClass);
 		info.getImpementation().unsetContent(contentPropertyValue);
 		
 		// remove the content property reference from the data object
@@ -143,7 +148,9 @@ public class ContentPropertyRestController extends AbstractContentPropertyContro
 			BeanUtils.setFieldWithAnnotation(contentPropertyValue, MimeType.class, mimeType);
 		}
 		
-		ContentStoreInfo info = ContentStoreUtils.findContentStore(storeService, repository);
+		Class<?> contentEntityClass = ContentPropertyUtils.getContentPropertyType(property);
+		
+		ContentStoreInfo info = ContentStoreUtils.findContentStore(storeService, contentEntityClass);
 		info.getImpementation().setContent(contentPropertyValue, stream);
 		
 		rootInfo.getInvoker().invokeSave(domainObj);
