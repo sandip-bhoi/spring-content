@@ -22,10 +22,10 @@ To start from scratch, move on to Build with Maven.
 
 To skip the basics, do the following:
 
-- Download and unzip the source repository for this guide, or clone it using Git: git clone https://github.com/spring-guides/gs-accessing-data-jpa.git
-- cd into spring-gs-accessing-data-mongo/initial
-- Jump ahead to Define a simple entity.
-When you’re finished, you can check your results against the code in gs-accessing-data-jpa/complete.
+- Download and unzip the source repository for this guide, or clone it using Git: `git clone https://paulcwarren@bitbucket.org/paulcwarren/spring-content.git`
+- cd into spring-content/spring-gs-accessing-data-mongo/initial
+- Jump ahead to `Define a simple entity`.
+When you’re finished, you can check your results against the code in `spring-content/spring-gs-accessing-content-mongo/complete`.
 
 ## Build with Maven
 
@@ -45,62 +45,58 @@ In a project directory of your choosing, create the following subdirectory struc
 `pom.xml`
 
 
-```xml
-<?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<?xml version="1.0" encoding="UTF-8"?>
+	<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+		<modelVersion>4.0.0</modelVersion>
 	
-	<modelVersion>4.0.0</modelVersion>
-
-	<groupId>org.springframework.content.gs</groupId>
-	<artifactId>gs-accessing-content-jpa</artifactId>
-	<version>0.1.0</version>
-
-	<parent>
-		<groupId>org.springframework.boot</groupId>
-		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>1.2.7.RELEASE</version>
-	</parent>
-
-	<dependencies>
-		<dependency>
+		<groupId>org.springframework.content.gs</groupId>
+		<artifactId>gs-accessing-content-jpa</artifactId>
+		<version>0.1.0</version>
+	
+		<parent>
 			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-data-mongodb</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-data-rest</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-web</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-content-mongo</artifactId>
-			<version>1.2.1.RELEASE</version>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-content-rest</artifactId>
-			<version>1.2.1.RELEASE</version>
-		</dependency>
-	</dependencies>
-
-	<properties>
-		<java.version>1.8</java.version>
-	</properties>
-
-	<build>
-		<plugins>
-			<plugin>
+			<artifactId>spring-boot-starter-parent</artifactId>
+			<version>1.2.7.RELEASE</version>
+		</parent>
+	
+		<dependencies>
+			<dependency>
 				<groupId>org.springframework.boot</groupId>
-				<artifactId>spring-boot-maven-plugin</artifactId>
-			</plugin>
-		</plugins>
-	</build>
-
-</project>
+				<artifactId>spring-boot-starter-data-mongodb</artifactId>
+			</dependency>
+			<dependency>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-starter-data-rest</artifactId>
+			</dependency>
+			<dependency>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-starter-web</artifactId>
+			</dependency>
+			<dependency>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-starter-content-mongo</artifactId>
+				<version>1.2.1.RELEASE</version>
+			</dependency>
+			<dependency>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-starter-content-rest</artifactId>
+				<version>1.2.1.RELEASE</version>
+			</dependency>
+		</dependencies>
+	
+		<properties>
+			<java.version>1.8</java.version>
+		</properties>
+	
+		<build>
+			<plugins>
+				<plugin>
+					<groupId>org.springframework.boot</groupId>
+					<artifactId>spring-boot-maven-plugin</artifactId>
+				</plugin>
+			</plugins>
+		</build>
+	</project>
 
 The [Spring Boot Maven plugin](https://github.com/spring-projects/spring-boot/tree/master/spring-boot-tools/spring-boot-maven-plugin) provides many convenient features:
 
@@ -114,48 +110,47 @@ In this example, you store Document objects, annotated as a Mongo entity with Co
 
 `src/main/java/docs/SpringDocument.java`
 
-```java
-package docs;
-
-import org.springframework.content.annotations.Content;
-import org.springframework.content.annotations.ContentId;
-import org.springframework.content.annotations.ContentLength;
-import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.mapping.Document;
-
-@Document
-public class SpringDocument {
-
-	@Id
-	private String id;
+	package docs;
 	
-	private String title;
-	private List<String> keywords;
+	import org.springframework.content.annotations.Content;
+	import org.springframework.content.annotations.ContentId;
+	import org.springframework.content.annotations.ContentLength;
+	import org.springframework.data.annotation.Id;
+	import org.springframework.data.mongodb.core.mapping.Document;
 	
-	@Content
-	private ContentMetadata content;
-
-	... getters and setters ...
+	@Document
+	public class SpringDocument {
 	
-	public static class ContentMetadata {
-		
-		public ContentMetadata() {}
-		
-		@ContentId
+		@Id
 		private String id;
 		
-		@ContentLength
-		private long length;
+		private String title;
+		private List<String> keywords;
 		
-		@MimeType
-		private String mimeType;
-
-		.. getters and setters ...
+		@Content
+		private ContentMetadata content;
+	
+		... getters and setters ...
 		
+		public static class ContentMetadata {
+			
+			public ContentMetadata() {}
+			
+			@ContentId
+			private String id;
+			
+			@ContentLength
+			private long length;
+			
+			@MimeType
+			private String mimeType;
+	
+			.. getters and setters ...
+			
+		}
 	}
-}
 
-```
+
 
 Here you have a standard Spring Data entity bean class `SpringDocument` class with several attributes, `id`, `title`, `keywords`.
 
@@ -173,72 +168,65 @@ All of these annotated attributes will be managed by Spring Content.
 
 ### Create a Spring Data Repository
 
-So that we can perform simple CRUD operations over HTTP create a simple repository for the `SpringDocument` class annotated with as a `@RepositoryRestResource`.
+So that we can perform simple CRUD operations, over a hypermedia-based API, create a simple repository for the `SpringDocument` class annotated with as a `@RepositoryRestResource`.
 
 `src/main/java/docs/SpringDocumentRepository.java`
 
-```
-package docs;
+	package docs;
+	
+	import org.springframework.data.repository.CrudRepository;
+	import org.springframework.data.rest.core.annotation.RepositoryRestResource;
+	
+	@RepositoryRestResource(path="/docs", collectionResourceRel="docs")
+	public interface SpringDocumentRepository extends CrudRepository<SpringDocument, String> {
+	
+	}
 
-import org.springframework.data.repository.CrudRepository;
-import org.springframework.data.rest.core.annotation.RepositoryRestResource;
+### Add a Spring Content ContentStore
 
-@RepositoryRestResource(path="/docs", collectionResourceRel="docs")
-public interface SpringDocumentRepository extends CrudRepository<SpringDocument, String> {
-
-}
-``` 
-
-### Add simple Spring Content handling
-
-Just like Spring Data focuses on storing data in a database, Spring Content focuses on storing content, in this case in the document-based database Mongo.  It's most compelling feature is the ability to create content store implementations automatically, at runtime, from a content store interface.
+Just like Spring Data focuses on storing data in a database, Spring Content focuses on storing content in various stores, in this case in Mongo GridFS store.  It's most compelling feature is the ability to create content store implementations automatically, at runtime, from a content store interface.
 
 To see how this works, create a content store interface that works with SpringDocument's `ContentMetadata` entity:
 
 `src/main/java/docs/ContentMetadataContentStore.java`
 
-```
-package docs;
-
-import org.springframework.content.common.repository.ContentStore;
-
-import docs.SpringDocument.ContentMetadata;
-import internal.org.springframework.content.rest.annotations.ContentStoreRestResource;
-
-@ContentStoreRestResource(path="/docs/*/content")
-public interface ContentMetadataContentStore extends ContentStore<ContentMetadata, String> {
-
-}
-```	
+	package docs;
+	
+	import org.springframework.content.common.repository.ContentStore;
+	
+	import docs.SpringDocument.ContentMetadata;
+	import internal.org.springframework.content.rest.annotations.ContentStoreRestResource;
+	
+	@ContentStoreRestResource
+	public interface ContentMetadataContentStore extends ContentStore<ContentMetadata, String> {
+	}
  
-`ContentMetadataContentStore` extends the `ContentStore` interface.  The type of the content entity and ID that this content store handles, `ContentMetadata` and `String`, and specified in the generic parameters on `ContentStore`.  By extending `ContentStore`, `ContentMetadataContentStore` inherits several methods for working with persisted content.
+`ContentMetadataContentStore` extends the `ContentStore` interface.  The type of the content entity and the type of the content entity's ID, `ContentMetadata` and `String` respectively, are specified in the generic parameters on `ContentStore`.  By extending `ContentStore`, `ContentMetadataContentStore` inherits several methods for working with persisted content.
 
 In a java application, you would expect to write an implementation for the `ContentMetadaDataContentStore` class.  But what makes Spring Content so powerful is that you don't have to do this.  Spring Content will create an implementation on the fly when you run the application.
 
-Likewise, in a web-based application you would also expect to implement HTTP handlers allowing you to PUT and GET content.  With Spring Content REST these are implemented for you by simply add the `ContentStoreRestResource` annotation to your content store.          
+Likewise, in a web-based application you would also expect to implement HTTP handlers allowing you to PUT and GET content over HTTP.  With Spring Content REST these are also implemented for you when you add the `ContentStoreRestResource` annotation to your content store.          
 
 Let's wire this up and see what it looks like!
 
 ### Create an application class
 
-Spring Content integrates seamlessly into Spring Boot, therefore you create a complete standard Application class. 
+Spring Content integrates seamlessly into Spring Boot, therefore you create the standard Application class. 
 
 `src/main/java/docs/Application.java`
 
-```
-package docs;
-
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
-
-@SpringBootApplication
-public class ContentApplication {
-
-	public static void main(String[] args) {
-		SpringApplication.run(ContentApplication.class);
+	package docs;
+	
+	import org.springframework.boot.SpringApplication;
+	import org.springframework.boot.autoconfigure.SpringBootApplication;
+	
+	@SpringBootApplication
+	public class ContentApplication {
+	
+		public static void main(String[] args) {
+			SpringApplication.run(ContentApplication.class);
+		}
 	}
-}
-```    
 
 ### Build an executable JAR
 
@@ -246,102 +234,84 @@ You can build a single executable JAR file that contains all the necessary depen
 
 If you are using Maven, you can run the application using `mvn spring-boot:run`. Or you can build the JAR file with `mvn clean package` and run the JAR by typing:
 
-```
-java -jar target/spring-gs-accessing-content-mongo-0.1.0.jar
-```
+	java -jar target/spring-gs-accessing-content-mongo-0.1.0.jar
 
 > **Note:** The procedure above will create a runnable JAR. You can also opt to [build a classic WAR file](http://spring.io/guides/gs/convert-jar-to-war/) instead.
 
-### Handle content
+### Handle Content
 
-Before you can handle content, you need to create an instance of a `SpringDocument`.  Using curl you can issue the following command:
+First create an instance of a `SpringDocument`.  Using curl, issue the following command:
 
-```
-curl -XPOST -H 'Content-Type:application/json' -d '{"title":"test doc","keywords":["one","two"]}' http://localhost:8080/docs
-``` 
+	curl -XPOST -H 'Content-Type:application/json' -d '{"title":"test doc","keywords":["one","two"]}' http://localhost:8080/docs
 
 Check that this `SpringDocument` was created by issing the following command:
 
-```
-curl http://localhost:8080/docs
-```
+	curl http://localhost:8080/docs
 
 and this should respond with:
 
-```
-{
-  "_embedded" : {
-    "docs" : [ {
-      "title" : "test doc",
-      "keywords" : [ "one", "two" ],
-      "content" : null,
-      "_links" : {
-        "self" : {
-          "href" : "http://localhost:8080/docs/5636224fa82677aa529322b6"
-        }
-      }
-    } ]
-  }
-}
-```
+	{
+	  "_embedded" : {
+	    "docs" : [ {
+	      "title" : "test doc",
+	      "keywords" : [ "one", "two" ],
+	      "content" : null,
+	      "_links" : {
+	        "self" : {
+	          "href" : "http://localhost:8080/docs/5636224fa82677aa529322b6"
+	        }
+	      }
+	    } ]
+	  }
+	}
  
-which shows us there is one document that can be fetched with a `GET` request to `http://localhost:8080/docs/5636224fa82677aa529322b6`
+which shows us there is one document that may be fetched with a `GET` request to `http://localhost:8080/docs/5636224fa82677aa529322b6`
+
+> **Note:** you're IDs will obviously be different, adjust as appropriate
  
 Notice, that the `content` attribute is null.  That is because we haven't added any content yet so let's add some, issue the following command:
 
-```
-curl -XPOST -F file=@/tmp/test.txt http://localhost:8080/docs/5636224fa82677aa529322b6/content
-```
+	curl -XPOST -F file=@/tmp/test.txt http://localhost:8080/docs/5636224fa82677aa529322b6/content
 
-> **Note:** In our example /tmp/test.txt contains the simple test `Hello Spring Content World!` but it could be any binary content.
+> **Note:** In our example /tmp/test.txt contains the simple plain text `Hello Spring Content World!` but this could be any binary content
 
 Now, re-query the original `SpringDocument` again:-
 
-```
-curl http://localhost:8080/docs/5636224fa82677aa529322b6
-```
+	curl http://localhost:8080/docs/5636224fa82677aa529322b6
   
 This time it should respond with:
 
-```
-{
-  "title" : "test doc",
-  "keywords" : [ "one", "two" ],
-  "content" : {
-    "length" : 28,
-    "mimeType" : "text/plain"
-  },
-  "_links" : {
-    "self" : {
-      "href" : "http://localhost:8080/docs/5636224fa82677aa529322b6"
-    },
-    "content" : {
-      "href" : "http://localhost:8080/docs/5636224fa82677aa529322b6/content/64bf2339-c8e5-44f1-b960-aeb9ea8e4a7e"
-    }
-  }
-}
-```  
+	{
+	  "title" : "test doc",
+	  "keywords" : [ "one", "two" ],
+	  "content" : {
+	    "length" : 28,
+	    "mimeType" : "text/plain"
+	  },
+	  "_links" : {
+	    "self" : {
+	      "href" : "http://localhost:8080/docs/5636224fa82677aa529322b6"
+	    },
+	    "content" : {
+	      "href" : "http://localhost:8080/docs/5636224fa82677aa529322b6/content/64bf2339-c8e5-44f1-b960-aeb9ea8e4a7e"
+	    }
+	  }
+	}
 
-We see the `content` attribute now contains useful information about the document's content, namely `length` and `mimeType`.  These are managed automatically by Spring Content.
+We see the `content` attribute now contains useful information about the document's content, namely `length` and `mimeType`.  These were set automatically by Spring Content.
 
 Similarly, `_links` also now contains a linkrel for `content` allowing clients to navigate from this `SpringDocument` resource to it's content.  Let's do that now, issue the command:
 
-```
-http://localhost:8080/docs/5636224fa82677aa529322b6/content/64bf2339-c8e5-44f1-b960-aeb9ea8e4a7e
-``` 
+	http://localhost:8080/docs/5636224fa82677aa529322b6/content/64bf2339-c8e5-44f1-b960-aeb9ea8e4a7e
 
 which responds:
 
-```
-Hello Spring Content World!
-```
+	Hello Spring Content World!
 
 ### Summary 
 
-Congratulations!  You've written a simple application that uses Spring Content and Spring Content REST to save objects and content to a database and to fetch them again over a hypermedia-based REST API - all without writing a single concrete implementation class. 
+Congratulations!  You've written a simple application that uses Spring Content and Spring Content REST to save objects with content to a database and to fetch them again using a hypermedia-based REST API - all without writing a single concrete implementation class. 
   
 ### Want to know more
 
 Read more about the project including it's anticipated backlog [here](spring-content.md).
-
-
