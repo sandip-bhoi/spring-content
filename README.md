@@ -1,10 +1,10 @@
 # Getting Started With Spring Content
 
-This guide walks you through building an application that uses Spring Content to store and retrieve binary content in a relational database.
+This guide walks you through building an application that uses Spring Content to store and retrieve  content in a database.
 
 ## What you'll build
 
-You'll build an application that stores Document POJOs in a memory-based database.
+You'll build an application that stores Document POJOs in a Mongo database.
 
 ## What you'll need
 
@@ -12,6 +12,7 @@ You'll build an application that stores Document POJOs in a memory-based databas
 - A favorite text editor or IDE
 - JDK 1.8 or later
 - Maven 3.0+
+- MongoDB 3.0.7
 - You can also import the code from this guide as well as view the web page directly into Spring Tool Suite (STS) and work your way through it from there.
 
 ## How to complete this guide
