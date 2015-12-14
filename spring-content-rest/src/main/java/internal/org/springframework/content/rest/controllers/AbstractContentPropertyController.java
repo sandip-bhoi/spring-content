@@ -1,28 +1,28 @@
 package internal.org.springframework.content.rest.controllers;
 
-import internal.org.springframework.content.rest.utils.PersistentEntityUtils;
-
 import java.util.Set;
 
 import org.springframework.content.annotations.ContentId;
 import org.springframework.content.common.utils.BeanUtils;
 import org.springframework.data.mapping.PersistentEntity;
 import org.springframework.data.mapping.PersistentProperty;
-import org.springframework.data.mapping.model.BeanWrapper;
-import org.springframework.data.rest.core.invoke.RepositoryInvoker;
+import org.springframework.data.mapping.PersistentPropertyAccessor;
+import org.springframework.data.repository.support.RepositoryInvoker;
 import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
+
+import internal.org.springframework.content.rest.utils.PersistentEntityUtils;
 
 public abstract class AbstractContentPropertyController {
 	
 	protected void setContentProperty(Object domainObj, PersistentProperty<?> property, String contentId, Object newValue) {
 
-		BeanWrapper<Object> wrapper = BeanWrapper.create(domainObj, null);
-		Object contentPropertyObject = wrapper.getProperty(property);
+		PersistentPropertyAccessor accessor = property.getOwner().getPropertyAccessor(domainObj);
+		Object contentPropertyObject = accessor.getProperty(property);
 		if (contentPropertyObject == null) 
 			return;
 		else if (!PersistentEntityUtils.isPropertyMultiValued(property)) {
-			wrapper.setProperty(property, newValue);
+			accessor.setProperty(property, newValue);
 		} else {
 			// handle multi-valued
 			if (property.isArray()) {
@@ -40,8 +40,8 @@ public abstract class AbstractContentPropertyController {
 
 	protected Object getContentProperty(Object domainObj, PersistentProperty<?> property, String contentId) {
 
-		BeanWrapper<Object> wrapper = BeanWrapper.create(domainObj, null);
-		Object contentPropertyObject = wrapper.getProperty(property);
+		PersistentPropertyAccessor accessor = property.getOwner().getPropertyAccessor(domainObj);
+		Object contentPropertyObject = accessor.getProperty(property);
 		if (contentPropertyObject == null) 
 			throw new ResourceNotFoundException();
 
@@ -60,7 +60,7 @@ public abstract class AbstractContentPropertyController {
 
 	protected Object getDomainObject(RepositoryInvoker invoker, String id) 
 			throws HttpRequestMethodNotSupportedException {
-		if (!invoker.exposesFindOne()) {
+		if (!invoker.hasFindOneMethod()) {
 			throw new HttpRequestMethodNotSupportedException("fineOne");
 		}
 

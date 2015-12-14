@@ -8,7 +8,7 @@ import org.springframework.web.servlet.DispatcherServlet;
 
 @Configuration
 @ConditionalOnClass(DispatcherServlet.class)
-@ComponentScan(basePackages={"internal.org.springframework.content"})
+@ComponentScan(basePackages = {"internal.org.springframework.content"})
 public class ContentRestAutoConfiguration {
 
 }

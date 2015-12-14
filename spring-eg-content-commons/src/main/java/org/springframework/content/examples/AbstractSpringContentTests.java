@@ -8,6 +8,7 @@ import static org.hamcrest.Matchers.nullValue;
 import java.io.IOException;
 
 import org.apache.commons.io.IOUtils;
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -22,7 +23,8 @@ public abstract class AbstractSpringContentTests {
 	ClaimFormStore claimFormStore;
 
 	@Before
-	public void setUp() {
+	@After
+	public void cleanUp() {
 		
 		// delete any existing claim forms
 		Iterable<Claim> existingClaims = claimRepo.findAll();

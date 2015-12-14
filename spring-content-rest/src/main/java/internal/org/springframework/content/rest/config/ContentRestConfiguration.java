@@ -1,9 +1,6 @@
 
 package internal.org.springframework.content.rest.config;
 
-import internal.org.springframework.content.rest.annotations.ContentRestController;
-import internal.org.springframework.content.rest.mappings.ContentHandlerMapping;
-
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.Field;
 import java.net.URI;
@@ -21,7 +18,7 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.mapping.PersistentProperty;
 import org.springframework.data.repository.support.Repositories;
-import org.springframework.data.rest.core.invoke.RepositoryInvokerFactory;
+import org.springframework.data.repository.support.RepositoryInvokerFactory;
 import org.springframework.data.rest.core.mapping.ResourceMappings;
 import org.springframework.data.rest.webmvc.BaseUri;
 import org.springframework.data.rest.webmvc.PersistentEntityResource;
@@ -33,6 +30,9 @@ import org.springframework.hateoas.ResourceProcessor;
 import org.springframework.util.Assert;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
+
+import internal.org.springframework.content.rest.annotations.ContentRestController;
+import internal.org.springframework.content.rest.mappings.ContentHandlerMapping;
 
 @Configuration
 @ComponentScan(basePackageClasses = ContentRestController.class)

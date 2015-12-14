@@ -1,8 +1,8 @@
 package internal.org.springframework.content.rest.utils;
 
 import org.springframework.data.repository.support.Repositories;
-import org.springframework.data.rest.core.invoke.RepositoryInvoker;
-import org.springframework.data.rest.core.invoke.RepositoryInvokerFactory;
+import org.springframework.data.repository.support.RepositoryInvoker;
+import org.springframework.data.repository.support.RepositoryInvokerFactory;
 import org.springframework.data.rest.core.mapping.ResourceMappings;
 import org.springframework.data.rest.core.mapping.ResourceMetadata;
 import org.springframework.data.rest.webmvc.ResourceNotFoundException;
@@ -16,7 +16,7 @@ public final class RepositoryUtils {
 		
 		ResourceMetadata mapping = null;
 		for (Class<?> domainType : repositories) {
-			ResourceMetadata candidate = repositoryMappings.getMappingFor(domainType);
+			ResourceMetadata candidate = repositoryMappings.getMetadataFor(domainType);
 			if (candidate.getPath().matches(repository)
 					&& candidate.isExported()) {
 				mapping = candidate;
@@ -31,7 +31,7 @@ public final class RepositoryUtils {
 
 		RepositoryInvoker repositoryInvoker = repositoryInvokerFactory.getInvokerFor(domainType);
 
-		if (!repositoryInvoker.exposesFindOne()) {
+		if (!repositoryInvoker.hasFindOneMethod()) {
 			throw new HttpRequestMethodNotSupportedException("fineOne");
 		}
 

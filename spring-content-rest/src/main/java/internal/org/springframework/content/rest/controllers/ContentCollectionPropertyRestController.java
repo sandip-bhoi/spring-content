@@ -20,7 +20,7 @@ import org.springframework.content.common.storeservice.ContentStoreService;
 import org.springframework.content.common.utils.BeanUtils;
 import org.springframework.data.mapping.PersistentEntity;
 import org.springframework.data.mapping.PersistentProperty;
-import org.springframework.data.mapping.model.BeanWrapper;
+import org.springframework.data.mapping.PersistentPropertyAccessor;
 import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 import org.springframework.data.rest.webmvc.RootResourceInformation;
 import org.springframework.hateoas.Link;
@@ -65,16 +65,16 @@ public class ContentCollectionPropertyRestController extends AbstractContentProp
 		if (null == entity)
 			throw new ResourceNotFoundException();
 		
-		PersistentProperty<?> prop = this.getContentPropertyDefinition(entity, contentProperty);
+		PersistentProperty<?> property = this.getContentPropertyDefinition(entity, contentProperty);
 
-		BeanWrapper<Object> wrapper = BeanWrapper.create(domainObj, null);
-		Object propVal = wrapper.getProperty(prop);
+		PersistentPropertyAccessor accessor = property.getOwner().getPropertyAccessor(domainObj);
+		Object propVal = accessor.getProperty(property);
 		if (propVal == null)
 			throw new ResourceNotFoundException("No content");
 
-		if (prop.isArray())
+		if (property.isArray())
 			throw new UnsupportedOperationException();
-		else if (prop.isCollectionLike()) {
+		else if (property.isCollectionLike()) {
 			@SuppressWarnings("unchecked")
 			List<Resource<Object>> resources = toResources(new ContentLinks(""), (Collection<Object>)propVal);
 			return new ResponseEntity<Resources<?>>(new ContentResources(resources), HttpStatus.OK);
@@ -153,23 +153,23 @@ public class ContentCollectionPropertyRestController extends AbstractContentProp
 		if (null == entity)
 			throw new ResourceNotFoundException();
 		
-		PersistentProperty<?> prop = this.getContentPropertyDefinition(entity, contentProperty);
+		PersistentProperty<?> property = this.getContentPropertyDefinition(entity, contentProperty);
 
-		BeanWrapper<Object> wrapper = BeanWrapper.create(domainObj, null);
-		Object propVal = wrapper.getProperty(prop);
+		PersistentPropertyAccessor accessor = property.getOwner().getPropertyAccessor(domainObj);
+		Object propVal = accessor.getProperty(property);
 		Class<?> contentEntityClass = null;
 		
 		// null single-valued content property
-		if (!PersistentEntityUtils.isPropertyMultiValued(prop)) {
-			contentEntityClass = prop.getActualType();
+		if (!PersistentEntityUtils.isPropertyMultiValued(property)) {
+			contentEntityClass = property.getActualType();
 		} 
 		// null multi-valued content property
-		else if (PersistentEntityUtils.isPropertyMultiValued(prop)) {
-			if (prop.isArray()) {
+		else if (PersistentEntityUtils.isPropertyMultiValued(property)) {
+			if (property.isArray()) {
 				contentEntityClass = propVal.getClass().getComponentType();
 			}
-			else if (prop.isCollectionLike()) {
-				contentEntityClass = prop.getActualType();
+			else if (property.isCollectionLike()) {
+				contentEntityClass = property.getActualType();
 			}
 		}
 		
@@ -178,32 +178,32 @@ public class ContentCollectionPropertyRestController extends AbstractContentProp
 			throw new IllegalStateException(String.format("Unable to find a content store for %s", repository));
 
 		// null single-valued content property
-		if (propVal == null && !PersistentEntityUtils.isPropertyMultiValued(prop)) {
+		if (propVal == null && !PersistentEntityUtils.isPropertyMultiValued(property)) {
 			propVal = instantiate(info.getDomainObjectClass());
-			wrapper.setProperty(prop, propVal);
+			accessor.setProperty(property, propVal);
 		} 
 		// null multi-valued content property
-		else if (propVal == null && PersistentEntityUtils.isPropertyMultiValued(prop)) {
+		else if (propVal == null && PersistentEntityUtils.isPropertyMultiValued(property)) {
 			// TODO: instantiate an instance of the required arrays or collection/set/list and then 
 			// an instance of the content property and add it to the list
 		} 
 		// non-null multi-valued property
-		else if (propVal != null && PersistentEntityUtils.isPropertyMultiValued(prop)) {
+		else if (propVal != null && PersistentEntityUtils.isPropertyMultiValued(property)) {
 
 			// instantiate an instance of the member type and add it
-			if (prop.isArray()) {
+			if (property.isArray()) {
 				Class<?> memberType = propVal.getClass().getComponentType();
 				Object member = instantiate(memberType);
 				Object newArray = Array.newInstance(propVal.getClass(), Array.getLength(propVal) + 1);
 				System.arraycopy(propVal, 0, newArray, 0, Array.getLength(propVal));
 				Array.set(newArray, Array.getLength(propVal), member);
-				wrapper.setProperty(prop, newArray);
+				accessor.setProperty(property, newArray);
 				propVal = member;
 				
-			} else if (prop.isCollectionLike()) {
-				Class<?> memberType = prop.getActualType();
+			} else if (property.isCollectionLike()) {
+				Class<?> memberType = property.getActualType();
 				Object member = instantiate(memberType);
-				@SuppressWarnings("unchecked") Collection<Object> contentCollection = wrapper.getProperty(prop, Collection.class);
+				@SuppressWarnings("unchecked") Collection<Object> contentCollection = (Collection<Object>)accessor.getProperty(property);
 				contentCollection.add(member);
 				propVal = member;
 			}
