@@ -16,7 +16,7 @@ import com.mongodb.Mongo;
 import com.mongodb.MongoClient;
 
 @SpringBootApplication
-@ComponentScan(basePackages={"org.springframework.content.examples", "internal.org.springframework.content"})
+@ComponentScan(basePackages={/*"org.springframework.content.examples", */"internal.org.springframework.content"})
 public class Application {
 
 	public static void main(String[] args) {

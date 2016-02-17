@@ -28,6 +28,12 @@
 			<artifactId>spring-content-rest</artifactId>
 			<version>0.0.1-SNAPSHOT</version>
 		</dependency>
+	  	<dependency>
+	  		<groupId>org.springframework.content</groupId>
+	  		<artifactId>spring-content-docx4j</artifactId>
+	  		<version>0.0.1-SNAPSHOT</version>
+	  	</dependency>
+		
 		<dependency>
 			<groupId>com.jayway.restassured</groupId>
 			<artifactId>rest-assured</artifactId>

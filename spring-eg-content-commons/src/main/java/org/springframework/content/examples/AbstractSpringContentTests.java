@@ -41,37 +41,45 @@ public abstract class AbstractSpringContentTests {
 	
 	@Test
 	public void test() throws IOException {
+		
+		// given an entity (Claim) with a content object (ClaimForm)
 		Claim claim = new Claim();
 		claim.setFirstName("John");
 		claim.setLastName("Smith");
-		
 		claim.setClaimForm(new ClaimForm());
+
+		// when we can setContent with a content stream
 		claimFormStore.setContent(claim.getClaimForm(), this.getClass().getResourceAsStream("/claim_form.pdf"));
+		
+		// then the content object should get a content id and length
 		Assert.assertThat(claim.getClaimForm().getContentId(), is(notNullValue()));
 		Assert.assertThat(claim.getClaimForm().getContentId().trim().length(), greaterThan(0));
 		Assert.assertEquals(claim.getClaimForm().getContentLength(), 1226609);
-		
 		claim = claimRepo.save(claim);
-
+		
+		// and the stored content should be equal to content originally set
 		Assert.assertTrue(IOUtils.contentEquals(this.getClass().getResourceAsStream("/claim_form.pdf"), claimFormStore.getContent(claim.getClaimForm())));
 	}
 
 	@Test
 	public void testUdate() throws IOException {
+
+		// given an entity (Claim) with a content object (ClaimForm) with content
 		Claim claim = new Claim();
 		claim.setFirstName("John");
 		claim.setLastName("Smith");
-		
 		claim.setClaimForm(new ClaimForm());
 		claimFormStore.setContent(claim.getClaimForm(), this.getClass().getResourceAsStream("/claim_form.pdf"));
 		Assert.assertThat(claim.getClaimForm().getContentId(), is(notNullValue()));
 		Assert.assertThat(claim.getClaimForm().getContentId().trim().length(), greaterThan(0));
 		Assert.assertEquals(claim.getClaimForm().getContentLength(), 1226609);
-		
 		claim = claimRepo.save(claim);
 
+		// when content is updated 
 		claimFormStore.setContent(claim.getClaimForm(), this.getClass().getResourceAsStream("/ACC_IN-1.DOC"));
 		claim = claimRepo.save(claim);
+
+		// then it's new content is stored
 		Assert.assertTrue(IOUtils.contentEquals(this.getClass().getResourceAsStream("/ACC_IN-1.DOC"), claimFormStore.getContent(claim.getClaimForm())));
 	}
 }

@@ -35,5 +35,16 @@
   		<version>0.0.1-SNAPSHOT</version>
   		<scope>test</scope>
   	</dependency>
+  	<dependency>
+		<groupId>dom4j</groupId>
+		<artifactId>dom4j</artifactId>
+		<version>1.6.1</version>
+		<scope>test</scope>
+	</dependency>
+	<dependency>
+		<groupId>jaxen</groupId>
+		<artifactId>jaxen</artifactId>
+		<scope>test</scope>
+	</dependency>
   </dependencies>
 </project>

@@ -1,8 +1,5 @@
 package org.springframework.content.common.config;
 
-import internal.org.springframework.content.common.storeservice.ContentStoreServiceImpl;
-import internal.org.springframework.content.common.utils.ContentRepositoryUtils;
-
 import java.lang.annotation.Annotation;
 import java.util.Set;
 
@@ -21,6 +18,10 @@ import org.springframework.core.io.ResourceLoader;
 import org.springframework.core.type.AnnotationMetadata;
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
+
+import internal.org.springframework.content.common.renditions.RenditionServiceImpl;
+import internal.org.springframework.content.common.storeservice.ContentStoreServiceImpl;
+import internal.org.springframework.content.common.utils.ContentRepositoryUtils;
 
 public abstract class AbstractContentStoreBeanDefinitionRegistrar implements ImportBeanDefinitionRegistrar, ResourceLoaderAware, BeanFactoryAware {
 
@@ -62,6 +63,15 @@ public abstract class AbstractContentStoreBeanDefinitionRegistrar implements Imp
 		BeanDefinition storeServiceBeanDef = createContentStoreServiceBeanDefinition();
 		registry.registerBeanDefinition("contentStoreService", storeServiceBeanDef);
 
+		BeanDefinition renditionServiceBeanDef = createRenditionServiceBeanDefinition();
+		registry.registerBeanDefinition("renditionService", renditionServiceBeanDef);
+
+//		BeanDefinition renditionProviderBeanDef = createRenditionProviderBeanDefinition(PdfRenditionProvider.class);
+//		registry.registerBeanDefinition("pdfRenditionProvider", renditionProviderBeanDef);
+//
+//		BeanDefinition htmlRenditionProviderBeanDef = createRenditionProviderBeanDefinition(WordToHtmlRenditionProvider.class);
+//		registry.registerBeanDefinition("htmlRenditionProvider", htmlRenditionProviderBeanDef);
+
 		registerContentStoreBeanDefinitions(importingClassMetadata, registry);
 	}
 
@@ -98,6 +108,26 @@ public abstract class AbstractContentStoreBeanDefinitionRegistrar implements Imp
 		
 		return beanDef;
 	}
+
+	private BeanDefinition createRenditionServiceBeanDefinition() {
+		GenericBeanDefinition beanDef = new GenericBeanDefinition();
+		beanDef.setBeanClass(RenditionServiceImpl.class);
+
+		MutablePropertyValues values = new MutablePropertyValues();
+		beanDef.setPropertyValues(values);
+		
+		return beanDef;
+	}
+
+//	private BeanDefinition createRenditionProviderBeanDefinition(Class<? extends RenditionProvider> providerClass) {
+//		GenericBeanDefinition beanDef = new GenericBeanDefinition();
+//		beanDef.setBeanClass(providerClass);
+//
+//		MutablePropertyValues values = new MutablePropertyValues();
+//		beanDef.setPropertyValues(values);
+//		
+//		return beanDef;
+//	}
 
 	/**
 	 * Return the annotation to obtain configuration information from. Will be wrappen into an
