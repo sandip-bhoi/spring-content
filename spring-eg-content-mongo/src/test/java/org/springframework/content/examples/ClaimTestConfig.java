@@ -35,9 +35,9 @@ public class ClaimTestConfig extends AbstractMongoConfiguration {
 
 	@Override
 	public Mongo mongo() throws Exception {
-		if (System.getenv("spring-eg-content-mongo-host") != null) {
-	    	String host = System.getenv("spring-eg-content-mongo-host");
-	    	String port = System.getenv("spring-eg-content-mongo-port");
+		if (System.getenv("spring_eg_content_mongo_host") != null) {
+	    	String host = System.getenv("spring_eg_content_mongo_host");
+	    	String port = System.getenv("spring_eg_content_mongo_port");
 
 	    	log.info(String.format("Connecting to %s:%s", host, port));
 	        int nPort = Integer.parseInt(port);
@@ -52,9 +52,9 @@ public class ClaimTestConfig extends AbstractMongoConfiguration {
     @Override
 	protected UserCredentials getUserCredentials() {
 
-    	if (System.getenv("spring-eg-content-mongo-username") != null) {
-	        String username = System.getenv("spring-eg-content-mongo-username");
-	        String password = System.getenv("spring-eg-content-mongo-password");
+    	if (System.getenv("spring_eg_content_mongo_username") != null) {
+	        String username = System.getenv("spring_eg_content_mongo_username");
+	        String password = System.getenv("spring_eg_content_mongo_password");
 	    	log.info(String.format("Connecting as %s:%s", username, password));
 		    return new UserCredentials(username, password);
 	    }
