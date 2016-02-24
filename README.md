@@ -1,3 +1,5 @@
+![Alt text](https://travis-ci.org/paulcwarren/spring-content.svg?branch=master)
+
 # Getting Started With Spring Content
 
 This guide walks you through building an application that uses Spring Content to store and retrieve  content in a database.
