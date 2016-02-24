@@ -17,7 +17,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.springframework.content.common.renditions.RenditionProvider;
 
-public class WordToHtmlRenditionProviderTests {
+public class WordToHtmlRenditionProviderTest {
 
 	private RenditionProvider service;
 	
