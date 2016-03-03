@@ -11,11 +11,11 @@ import org.docx4j.model.fields.FieldUpdater;
 import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
 import org.springframework.content.common.renditions.RenditionProvider;
 
-public class PdfRenditionProvider implements RenditionProvider {
+public class WordToPdfRenditionProvider implements RenditionProvider {
 
 	@Override
 	public String consumes() {
-		return "application/word";
+		return "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
 	}
 
 	@Override
@@ -49,9 +49,9 @@ public class PdfRenditionProvider implements RenditionProvider {
 			// FO exporter setup (required)
 			// .. the FOSettings object
 	    	FOSettings foSettings = Docx4J.createFOSettings();
-			if (false) {
-				foSettings.setFoDumpFile(new java.io.File("/tmp/test.fo"));
-			}
+//			if (false) {
+//				foSettings.setFoDumpFile(new java.io.File("/tmp/test.fo"));
+//			}
 			foSettings.setWmlPackage(pkg);
 			
 			//ByteArrayOutputStream os = new ByteArrayOutputStream();
@@ -77,5 +77,4 @@ public class PdfRenditionProvider implements RenditionProvider {
 		
 		return null;
 	}
-
 }
