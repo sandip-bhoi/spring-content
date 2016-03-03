@@ -78,11 +78,19 @@
 			<scope>test</scope>
 		</dependency>
 		
+		<dependency>
+			<groupId>org.apache.pdfbox</groupId>
+			<artifactId>pdfbox</artifactId>
+			<version>1.8.9</version>
+			<scope>test</scope>
+		</dependency>
+		
+		
 	</dependencies>
 
 	<build>
 		<plugins>
-			<plugin>
+<!-- 			<plugin>
 				<groupId>org.jacoco</groupId>
 				<artifactId>jacoco-maven-plugin</artifactId>
 				<version>0.7.6.201602180812</version>
@@ -100,15 +108,15 @@
 			                <goal>report</goal>
 			            </goals>
 			        </execution>
-<!-- 			        <execution>
+			        <execution>
 			            <id>default-check</id>
 			            <goals>
 			                <goal>check</goal>
 			            </goals>
 			        </execution>
- -->				</executions>
+				</executions>
 			</plugin>
-		</plugins>
+ -->		</plugins>
 	</build>
 
 </project>
