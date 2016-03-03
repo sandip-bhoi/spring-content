@@ -5,4 +5,4 @@ jdk:
 
 script:
  - mvn test
- - ant build.xml  
+ - ant -buildfile build.xml  
