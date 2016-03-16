@@ -13,13 +13,9 @@ import org.springframework.content.common.renditions.RenditionService;
 
 public class RenditionServiceImpl implements RenditionService {
 
-	@Autowired(required=false)
 	private List<RenditionProvider> providers = new ArrayList<RenditionProvider>();
 	
-	List<RenditionProvider> getProviders() {
-		return providers;
-	}
-
+	@Autowired(required=false)
 	void setProviders(List<RenditionProvider> providers) {
 		this.providers = providers;
 	}
