@@ -43,6 +43,7 @@
 		<module>./spring-eg-starter-content-jpa</module>
 		<module>./spring-eg-starter-content-mongo</module>
 		<module>./spring-gs-accessing-content-mongo/complete</module>
+		<module>./spring-gs-content-cm</module>
 		<module>./spring-gs-content-quickclaim</module>
 	</modules>
 

@@ -1,0 +1,7 @@
+springcm-mongodb:
+  container_name: springcm-mongodb
+  image: mongo:3.0.7
+  # volumes:
+  #   - ~/volumes/jhipster/springcm/mongodb/:/data/db/
+  ports:
+    - "27017:27017"
