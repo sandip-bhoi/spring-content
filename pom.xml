@@ -28,6 +28,7 @@
 		<module>./spring-content-mongo</module>
 		<module>./spring-content-jpa</module>
 		<module>./spring-content-s3</module>
+		<module>./spring-content-fs</module>
 		<module>./spring-content-rest</module>
 <!-- 		<module>./spring-content-example-mongo</module>
  -->	<module>./spring-boot-starter-content-jpa</module>
