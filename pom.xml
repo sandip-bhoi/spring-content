@@ -36,6 +36,7 @@
 		<module>./spring-boot-starter-content-rest</module>
 		<module>./spring-boot-starter-content-s3</module>
 		<module>./spring-eg-content-commons</module>
+		<module>./spring-eg-content-fs</module>
 		<module>./spring-eg-content-mongo</module>
 		<module>./spring-eg-content-jpa</module>
 		<module>./spring-eg-content-s3</module>
