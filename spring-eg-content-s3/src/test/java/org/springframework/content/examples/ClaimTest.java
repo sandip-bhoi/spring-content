@@ -9,6 +9,6 @@ import com.github.paulcwarren.ginkgo4j.Ginkgo4jSpringRunner;
 @RunWith(Ginkgo4jSpringRunner.class)
 @Ginkgo4jConfiguration(threads=1)
 @ContextConfiguration(classes = { ClaimTestConfig.class })
-public class ClaimTest extends AbstractSpringContentTests2 {
+public class ClaimTest extends AbstractSpringContentTests {
 
 }
