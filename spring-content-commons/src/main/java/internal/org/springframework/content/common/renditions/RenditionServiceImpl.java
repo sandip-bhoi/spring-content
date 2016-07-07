@@ -16,8 +16,10 @@ public class RenditionServiceImpl implements RenditionService {
 	private List<RenditionProvider> providers = new ArrayList<RenditionProvider>();
 	
 	@Autowired(required=false)
-	void setProviders(List<RenditionProvider> providers) {
-		this.providers = providers;
+	public void setProviders(RenditionProvider... providers) {
+		for (RenditionProvider provider : providers) {
+			this.providers.add(provider);
+		}
 	}
 
 	@Override

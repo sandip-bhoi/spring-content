@@ -16,7 +16,6 @@ import org.springframework.content.common.storeservice.ContentStoreService;
 public class ContentStoreServiceImpl implements ContentStoreService {
 
 	private Set<ContentStoreInfo> contentStoreInfos = new HashSet<>();
-	//List<ContentStoreFactory> factories = new ArrayList<>();
 	
 	public ContentStoreServiceImpl() {
 	}

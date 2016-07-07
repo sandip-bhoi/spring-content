@@ -11,6 +11,7 @@ import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.GenericBeanDefinition;
+import org.springframework.beans.factory.support.RootBeanDefinition;
 import org.springframework.context.ResourceLoaderAware;
 import org.springframework.context.annotation.ImportBeanDefinitionRegistrar;
 import org.springframework.core.annotation.AnnotationAttributes;
@@ -25,6 +26,8 @@ import internal.org.springframework.content.common.utils.ContentRepositoryUtils;
 
 public abstract class AbstractContentStoreBeanDefinitionRegistrar implements ImportBeanDefinitionRegistrar, ResourceLoaderAware, BeanFactoryAware {
 
+	private static String REPOSITORY_INTERFACE_POST_PROCESSOR = "internal.org.springframework.content.common.utils.ContentRepositoryInterfaceAwareBeanPostProcessor";
+	
 	private ResourceLoader resourceLoader;
 	private BeanFactory beanFactory;
 	
@@ -59,6 +62,10 @@ public abstract class AbstractContentStoreBeanDefinitionRegistrar implements Imp
 		//if (importingClassMetadata.getAnnotationAttributes(getAnnotation().getName()) == null) {
 		//	return;
 		//}
+
+		RootBeanDefinition repositoryInterfacePostProcessor = new RootBeanDefinition(REPOSITORY_INTERFACE_POST_PROCESSOR);
+		repositoryInterfacePostProcessor.setSource(importingClassMetadata);
+		registry.registerBeanDefinition(REPOSITORY_INTERFACE_POST_PROCESSOR, repositoryInterfacePostProcessor);
 		
 		BeanDefinition storeServiceBeanDef = createContentStoreServiceBeanDefinition();
 		registry.registerBeanDefinition("contentStoreService", storeServiceBeanDef);
