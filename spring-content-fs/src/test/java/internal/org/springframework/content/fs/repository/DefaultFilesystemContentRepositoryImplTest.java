@@ -12,6 +12,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Matchers.anyObject;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -20,12 +21,15 @@ import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.InOrder;
 import org.mockito.Matchers;
+import org.mockito.Mockito;
 import org.springframework.content.commons.annotations.ContentId;
 import org.springframework.content.commons.annotations.ContentLength;
 import org.springframework.content.commons.placementstrategy.PlacementService;
+import org.springframework.core.io.FileSystemResource;
+import org.springframework.core.io.Resource;
 import org.springframework.core.io.WritableResource;
 
 import com.github.paulcwarren.ginkgo4j.Ginkgo4jRunner;
@@ -36,53 +40,54 @@ import internal.org.springframework.content.fs.operations.FileResourceTemplate;
 public class DefaultFilesystemContentRepositoryImplTest {
     private DefaultFileSystemContentRepositoryImpl<TestEntity, String> filesystemContentRepoImpl;
     private FileResourceTemplate fileResourceTemplate;
+    private FileSystemResource root;
     private PlacementService placement;
     private TestEntity entity;
+    
     private WritableResource resource;
+    private Resource nonExistentResource;
 
     private InputStream content;
     private OutputStream output;
 
+    private InputStream result;
+
     {
-//    	Describe("how does java.io.File really work?", () -> {
-//    		FIt("does something", () -> {
-//    			File f = new File("/tmp/something/else");
-//    			FileOutputStream out = new FileOutputStream(f);
-//    			out.write("some bytes".getBytes());
-//    			out.close();
-//    		});
-//    	});
-    	
         Describe("DefaultFilesystemContentRepositoryImpl", () -> {
             BeforeEach(() -> {
+                root = mock(FileSystemResource.class);
                 resource = mock(WritableResource.class);
                 fileResourceTemplate = mock(FileResourceTemplate.class);
                 placement = mock(PlacementService.class);
-                filesystemContentRepoImpl = new DefaultFileSystemContentRepositoryImpl<TestEntity, String>(fileResourceTemplate, placement);
+                filesystemContentRepoImpl = new DefaultFileSystemContentRepositoryImpl<TestEntity, String>(root, placement);
                 
-                when(fileResourceTemplate.get(anyObject())).thenReturn(resource);
-                output = mock(OutputStream.class);
-                when(resource.getOutputStream()).thenReturn(output);
             });
             Context("#setContent", () -> {
                 BeforeEach(() -> {
                     entity = new TestEntity();
                     content = new ByteArrayInputStream("Hello content world!".getBytes());
-                    when(resource.contentLength()).thenReturn(1L);
+
                     when(placement.getLocation(anyObject())).thenReturn("/some/deep/location");
+
+                    when(root.createRelative(eq("/some/deep/location"))).thenReturn(resource);
+//                    when(fileResourceTemplate.get(anyObject())).thenReturn(resource);
+                    output = mock(OutputStream.class);
+                    when(resource.getOutputStream()).thenReturn(output);
+
+                    when(resource.contentLength()).thenReturn(20L);
                 });
 
                 JustBeforeEach(() -> {
                     filesystemContentRepoImpl.setContent(entity, content);
                 });
 
-//                It("should get a location from the placement service and use that to fetch the resource", () -> {
-//                	verify(placement).getLocation(anyObject());
-//                	verify(fileResourceTemplate).get(eq("/some/deep/location"));
-//                });
+                It("should get a location from the placement service and use that to create the resource", () -> {
+                	verify(placement).getLocation(anyObject());
+                	verify(root).createRelative(eq("/some/deep/location"));
+                });
                 
                 It("should change the content length", () -> {
-                    assertThat(entity.getContentLen(), is(1L));
+                    assertThat(entity.getContentLen(), is(20L));
                 });
 
                 Context("#when the content already exists", () -> {
@@ -90,14 +95,6 @@ public class DefaultFilesystemContentRepositoryImplTest {
                         entity.setContentId("abcd");
                     });
 
-//                    It("should use the existing UUID", () -> {
-//                        assertThat(entity.getContentId(), is("abcd"));
-//                    });
-
-//                    It("should not create a new resource", () -> {
-//                    	verify(fileResourceTemplate, never()).create();
-//                    });
-                    
                     It("should write to the resource's outputstream", () -> {
                         verify(resource).getOutputStream();
                         verify(output, times(1)).write(Matchers.<byte[]>any(), eq(0), eq(20));
@@ -111,9 +108,9 @@ public class DefaultFilesystemContentRepositoryImplTest {
                     It("should make a new UUID", () -> {
                         assertThat(entity.getContentId(), is(not(nullValue())));
                     });
-//                    It("should create a new resource", () -> {
-//                    	verify(fileResourceTemplate).createResource(anyObject());
-//                    });
+                    It("should create a new resource", () -> {
+                    	verify(root).createRelative(eq("/some/deep/location"));
+                    });
                     It("should write to the resource's outputstream", () -> {
                         verify(resource).getOutputStream();
                         verify(output, times(1)).write(Matchers.<byte[]>any(), eq(0), eq(20));
@@ -125,27 +122,59 @@ public class DefaultFilesystemContentRepositoryImplTest {
                 BeforeEach(() -> {
                     entity = new TestEntity();
                     content = mock(InputStream.class);
-                    entity.setContentId("abcd");
-                    when(fileResourceTemplate.get(anyObject())).thenReturn(resource);
+                    entity.setContentId("abcd-efgh");
+                  
+                    when(placement.getLocation(eq("abcd-efgh"))).thenReturn("/abcd/efgh");
+                    
+//                    when(fileResourceTemplate.get(anyObject())).thenReturn(resource);
+                    when(root.createRelative(eq("/abcd/efgh"))).thenReturn(resource);
                     when(resource.getInputStream()).thenReturn(content);
                 });
 
+                JustBeforeEach(() -> {
+                	result = filesystemContentRepoImpl.getContent(entity);
+                });
+                
                 Context("when the resource exists", () -> {
                     BeforeEach(() -> {
                         when(resource.exists()).thenReturn(true);
                     });
 
                     It("should get content", () -> {
-                        assertThat(filesystemContentRepoImpl.getContent(entity), is(content));
+                        assertThat(result, is(content));
                     });
                 });
                 Context("when the resource does not exists", () -> {
                     BeforeEach(() -> {
-                        when(resource.exists()).thenReturn(false);
+                		nonExistentResource = mock(Resource.class);
+                		when(resource.exists()).thenReturn(true);
+
+                		when(root.createRelative(eq("/abcd/efgh"))).thenReturn(nonExistentResource);
+                        when(root.createRelative(eq("abcd-efgh"))).thenReturn(nonExistentResource);
                     });
 
                     It("should not find the content", () -> {
-                        assertThat(filesystemContentRepoImpl.getContent(entity), is(nullValue()));
+                        assertThat(result, is(nullValue()));
+                    });
+                });
+                Context("when the resource exists in the old location", () -> {
+                	BeforeEach(() -> {
+                		nonExistentResource = mock(Resource.class);
+                        when(root.createRelative(eq("/abcd/efgh"))).thenReturn(nonExistentResource);
+                        when(nonExistentResource.exists()).thenReturn(false);
+
+                        when(root.createRelative(eq("abcd-efgh"))).thenReturn(resource);
+                        when(resource.exists()).thenReturn(true);
+                	});
+                	It("should check the new location and then the old", () -> {
+                		InOrder inOrder = Mockito.inOrder(root);
+                		
+                		inOrder.verify(root).createRelative(eq("/abcd/efgh"));
+                		inOrder.verify(root).createRelative(eq("abcd-efgh"));
+                		inOrder.verifyNoMoreInteractions();
+                	});
+                    It("should get content", () -> {
+                        assertThat(result, is(content));
                     });
                 });
             });
@@ -153,27 +182,68 @@ public class DefaultFilesystemContentRepositoryImplTest {
             Context("#unsetContent", () -> {
                 BeforeEach(() -> {
                     entity = new TestEntity();
-                    entity.setContentId("abcd");
-                    when(fileResourceTemplate.get(anyObject())).thenReturn(resource);
-                    when(resource.exists()).thenReturn(true);
+                    entity.setContentId("abcd-efgh");
+                    entity.setContentLen(100L);
                 });
 
                 JustBeforeEach(() -> {
                 	filesystemContentRepoImpl.unsetContent(entity);
                 });
 
-                It("should unset content", () -> {
-                    verify(fileResourceTemplate).delete(anyObject());
-                    assertThat(entity.getContentId(), is(nullValue()));
-                    assertThat(entity.getContentLen(), is(0L));
+                Context("when the content exists in the new location", () -> {
+                	BeforeEach(() -> {
+                		when(placement.getLocation("abcd-efgh")).thenReturn("/abcd/efgh");
+                		
+	            		when(root.createRelative("/abcd/efgh")).thenReturn(resource);
+	            		when(resource.exists()).thenReturn(true);
+                	});
+                	It("should unset content", () -> {
+                		verify(fileResourceTemplate).delete(eq(resource));
+                		assertThat(entity.getContentId(), is(nullValue()));
+                		assertThat(entity.getContentLen(), is(0L));
+                	});
+                });
+                
+                Context("when the content exists in the old location", () -> {
+                	BeforeEach(() -> {
+                        when(placement.getLocation("abcd-efgh")).thenReturn("/abcd/efgh");
+
+                        nonExistentResource = mock(Resource.class);
+                        when(fileResourceTemplate.get(eq("/abcd/efgh"))).thenReturn(nonExistentResource);
+                        when(nonExistentResource.exists()).thenReturn(false);
+
+                        when(fileResourceTemplate.get(eq("abcd-efgh"))).thenReturn(resource);
+                        when(resource.exists()).thenReturn(true);
+                        
+                        when(fileResourceTemplate.getLocation("abcd-efgh")).thenReturn("/some-root/abcd-efgh");
+                	});
+                	It("should unset the content", () -> {
+                		verify(fileResourceTemplate).delete(resource);
+                		assertThat(entity.getContentId(), is(nullValue()));
+                		assertThat(entity.getContentLen(), is(0L));
+                	});
+                });
+                
+                Context("when the content doesnt exist", () -> {
+                	BeforeEach(() -> {
+                        when(placement.getLocation("abcd-efgh")).thenReturn("/abcd/efgh");
+
+                		nonExistentResource = mock(Resource.class);
+                        when(fileResourceTemplate.get(eq("/abcd/efgh"))).thenReturn(nonExistentResource);
+                        when(nonExistentResource.exists()).thenReturn(false);
+
+                		nonExistentResource = mock(Resource.class);
+                        when(fileResourceTemplate.get(eq("abcd-efgh"))).thenReturn(nonExistentResource);
+                        when(nonExistentResource.exists()).thenReturn(false);
+                	});
+                	It("should unset the content", () -> {
+                		verify(fileResourceTemplate, never()).delete(nonExistentResource);
+                		assertThat(entity.getContentId(), is(nullValue()));
+                		assertThat(entity.getContentLen(), is(0L));
+                	});
                 });
             });
         });
-    }
-
-    @Test
-    public void test() {
-    	//noop
     }
 
     public static class TestEntity {

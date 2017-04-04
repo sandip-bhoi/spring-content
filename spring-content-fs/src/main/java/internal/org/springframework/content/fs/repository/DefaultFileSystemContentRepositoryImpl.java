@@ -14,6 +14,7 @@ import org.springframework.content.commons.annotations.ContentLength;
 import org.springframework.content.commons.placementstrategy.PlacementService;
 import org.springframework.content.commons.repository.ContentStore;
 import org.springframework.content.commons.utils.BeanUtils;
+import org.springframework.content.io.FileSystemResourceLoader;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.WritableResource;
 
@@ -24,10 +25,16 @@ public class DefaultFileSystemContentRepositoryImpl<S, SID extends Serializable>
 	private static Log logger = LogFactory.getLog(DefaultFileSystemContentRepositoryImpl.class);
 	
 	private FileResourceTemplate template;
+	private FileSystemResourceLoader loader;
 	private PlacementService placement;
 
 	public DefaultFileSystemContentRepositoryImpl(FileResourceTemplate template, PlacementService placement) {
 		this.template = template;
+		this.placement = placement;
+	}
+
+	public DefaultFileSystemContentRepositoryImpl(FileSystemResourceLoader loader, PlacementService placement) {
+		this.loader = loader;
 		this.placement = placement;
 	}
 
@@ -39,7 +46,12 @@ public class DefaultFileSystemContentRepositoryImpl<S, SID extends Serializable>
 			BeanUtils.setFieldWithAnnotation(property, ContentId.class, contentId.toString());
 		}
 
-		Resource resource = this.template.get(this.template.getLocation(contentId));
+		String location = placement.getLocation(contentId);
+//		Resource resource = template.get(location);
+		Resource resource = root.createRelative(location);
+//		if (resource.exists() == false) {
+//			resource = template.create(location);
+//		}
 		OutputStream os = null;
 		try {
 			if (resource instanceof WritableResource) {
@@ -73,7 +85,11 @@ public class DefaultFileSystemContentRepositoryImpl<S, SID extends Serializable>
 		if (contentId == null)
 			return null;
 
-		Resource resource = this.template.get(this.template.getLocation(contentId));
+		String location = placement.getLocation(contentId);
+		Resource resource = root.createRelative(location);
+		
+		resource = checkOriginalPlacementStrategy(contentId, resource);
+		
 		try {
 			if (resource.exists()) {
 				return resource.getInputStream();
@@ -85,7 +101,7 @@ public class DefaultFileSystemContentRepositoryImpl<S, SID extends Serializable>
 		return null;
 	}
 
-@Override
+	@Override
 	public void unsetContent(S property) {
 		if (property == null)
 			return;
@@ -93,18 +109,25 @@ public class DefaultFileSystemContentRepositoryImpl<S, SID extends Serializable>
 		if (contentId == null)
 			return;
 	
-		// delete any existing content object
-		try {
-			Resource resource = this.template.get(this.template.getLocation(contentId));
-			if (resource.exists()) {
-				this.template.delete(resource);
-	
-				// reset content fields
-		        BeanUtils.setFieldWithAnnotation(property, ContentId.class, null);
-		        BeanUtils.setFieldWithAnnotation(property, ContentLength.class, 0);
-			}
-		} catch (Exception ase) {
-			logger.error(String.format("Unexpected error unsetting content %s", contentId.toString()), ase);
+		// delete any existing content object	
+		String location = placement.getLocation(contentId);
+		Resource resource = this.template.get(location);
+
+		resource = checkOriginalPlacementStrategy(contentId, resource);
+
+		if (resource.exists()) {
+			this.template.delete(resource);
 		}
+
+		// reset content fields
+		BeanUtils.setFieldWithAnnotation(property, ContentId.class, null);
+		BeanUtils.setFieldWithAnnotation(property, ContentLength.class, 0);
+	}
+	
+	/* package */ Resource checkOriginalPlacementStrategy(Object contentId, Resource resource) {
+		if (resource.exists() == false) {
+			resource = root.createRelative(contentId.toString());
+		}
+		return resource;
 	}
 }

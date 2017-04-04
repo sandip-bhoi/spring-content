@@ -28,6 +28,8 @@ import org.springframework.context.annotation.PropertySource;
 
 import com.github.paulcwarren.ginkgo4j.Ginkgo4jRunner;
 
+import internal.org.springframework.content.commons.placementstrategy.UUIDPlacementStrategy;
+
 @RunWith(Ginkgo4jRunner.class)
 public class ContentRepositoryTest {
 
@@ -59,12 +61,11 @@ public class ContentRepositoryTest {
 					assertThat(context.getBean(FilesystemProperties.class), is(not(nullValue())));
 					assertThat(context.getBean(FilesystemProperties.class).getFilesystemRoot(), is("/a/b/c"));
 				});
-				It("should have a FilesystemProperties bean", () -> {
-					assertThat(context.getBean(FilesystemProperties.class), is(not(nullValue())));
-					assertThat(context.getBean(FilesystemProperties.class).getFilesystemRoot(), is("/a/b/c"));
-				});
 				It("should have a PlacementService bean", () -> {
 					assertThat(context.getBean(PlacementService.class), is(not(nullValue())));
+				});
+				It("should have a default UUIDPlacementStrategy bean", () -> {
+					assertThat(context.getBean(UUIDPlacementStrategy.class), is(not(nullValue())));
 				});
 			});
 			Context("given a context with an empty configuration", () -> {
