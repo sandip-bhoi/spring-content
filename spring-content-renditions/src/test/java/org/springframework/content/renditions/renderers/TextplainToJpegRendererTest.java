@@ -58,7 +58,7 @@ public class TextplainToJpegRendererTest {
                             InputStream expected = this.getClass().getResourceAsStream("/textplaintorenderer/single-line.jpeg");
                             assertThat(expected, is(not(nullValue())));
                             assertThat(result, is(not(nullValue())));
-                            assertThat(IOUtils.contentEquals(IOUtils.contentEquals(expected), result), is(true));
+                            assertThat(IOUtils.contentEquals(expected, result), is(true));
                         });
                     });
                     Context("given a multi-line input", () -> {
