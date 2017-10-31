@@ -14,8 +14,8 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 
-//@RunWith(Ginkgo4jRunner.class)
-//@Ginkgo4jConfiguration(threads=1)
+@RunWith(Ginkgo4jRunner.class)
+@Ginkgo4jConfiguration(threads=1)
 public class TextplainToJpegRendererTest {
 
     private boolean wrapText = false;
