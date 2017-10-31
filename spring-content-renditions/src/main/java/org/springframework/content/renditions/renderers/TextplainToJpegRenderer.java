@@ -59,6 +59,7 @@ public class TextplainToJpegRenderer implements RenditionProvider {
         } catch (Exception e) {
             throw new RenditionException("Error creating font", e);
         }
+        logger.info("Font created: " + font.toString());
 
         BufferedImage tempBuffer = new BufferedImage(1, 1, BufferedImage.TYPE_INT_RGB);
         Graphics2D g = tempBuffer.createGraphics();
@@ -68,6 +69,7 @@ public class TextplainToJpegRenderer implements RenditionProvider {
         FontRenderContext fc = g.getFontRenderContext();
         Rectangle2D bounds = font.getStringBounds("Random Text", fc);
         int lineHeight = (int)bounds.getHeight();
+        logger.info("Line height calculated as : " + lineHeight);
 
         BufferedReader reader = null;
 
@@ -76,6 +78,7 @@ public class TextplainToJpegRenderer implements RenditionProvider {
         } catch (Exception e) {
             throw new RenditionException("Error opening input stream", e);
         }
+        logger.info("Buffered reader created from input source");
 
         ArrayList images = new ArrayList();
 
@@ -86,15 +89,18 @@ public class TextplainToJpegRenderer implements RenditionProvider {
 
             try {
                 line = reader.readLine();
+                logger.info("Line read: " + line);
             } catch (IOException ignore) {
                 break;
             }
 
             if (line == null) { // EOF
+                logger.info("EOF reached");
                 break;
             }
 
             if ("".equals(line)) { // Empty line
+                logger.info("Empty line");
                 line = " ";
             }
 
@@ -105,6 +111,7 @@ public class TextplainToJpegRenderer implements RenditionProvider {
 
             AttributedCharacterIterator aci = attribString.getIterator();
             LineBreakMeasurer lbm = new LineBreakMeasurer(aci, fc);
+            logger.info("Line break measurer: " lbm.toString());
 
             while (lbm.getPosition() < line.length()) {
                 BufferedImage lineBuffer = new BufferedImage(width, lineHeight, BufferedImage.TYPE_INT_ARGB);
@@ -119,8 +126,10 @@ public class TextplainToJpegRenderer implements RenditionProvider {
                 layout.draw(g1, margin, y);
                 images.add(lineBuffer);
                 lineCnt += lineHeight;
+                logger.info("Image added.  Line count: " + lineCnt);
 
                 if (lineCnt + lineHeight > 480 || !wrapText) {
+                    logger.info("Image overflowed");
                     break;
                 }
             }
@@ -129,6 +138,7 @@ public class TextplainToJpegRenderer implements RenditionProvider {
         if (lineCnt != 0) {
             try {
                 saveImage(images, lineHeight, "/tmp/textToJpeg.jpeg");
+                logger.info("Image saved");
                 return new FileInputStream("/tmp/textToJpeg.jpeg");
             } catch (IOException e) {
                 throw new RenditionException("Error writing image", e);
