@@ -111,7 +111,7 @@ public class TextplainToJpegRenderer implements RenditionProvider {
 
             AttributedCharacterIterator aci = attribString.getIterator();
             LineBreakMeasurer lbm = new LineBreakMeasurer(aci, fc);
-            logger.info("Line break measurer: " lbm.toString());
+            logger.info("Line break measurer: " + lbm.toString());
 
             while (lbm.getPosition() < line.length()) {
                 BufferedImage lineBuffer = new BufferedImage(width, lineHeight, BufferedImage.TYPE_INT_ARGB);
