@@ -68,7 +68,6 @@ public class TextplainToJpegRenderer implements RenditionProvider {
         FontRenderContext fc = g.getFontRenderContext();
         Rectangle2D bounds = font.getStringBounds("Random Text", fc);
         int lineHeight = (int)bounds.getHeight();
-        logger.info("Line height calculated as : " + lineHeight);
 
         BufferedReader reader = null;
 
@@ -87,18 +86,15 @@ public class TextplainToJpegRenderer implements RenditionProvider {
 
             try {
                 line = reader.readLine();
-                logger.info("Line read: " + line);
             } catch (IOException ignore) {
                 break;
             }
 
             if (line == null) { // EOF
-                logger.info("EOF reached");
                 break;
             }
 
             if ("".equals(line)) { // Empty line
-                logger.info("Empty line");
                 line = " ";
             }
 
@@ -123,10 +119,8 @@ public class TextplainToJpegRenderer implements RenditionProvider {
                 layout.draw(g1, margin, y);
                 images.add(lineBuffer);
                 lineCnt += lineHeight;
-                logger.info("Line image added.  Line count: " + lineCnt);
 
                 if (lineCnt + lineHeight > 480 || !wrapText) {
-                    logger.info("Image overflowed");
                     break;
                 }
             }
@@ -135,14 +129,12 @@ public class TextplainToJpegRenderer implements RenditionProvider {
         if (lineCnt != 0) {
             try {
                 saveImage(images, lineHeight, "/tmp/textToJpeg.jpeg");
-                logger.info("Image saved");
                 return new FileInputStream("/tmp/textToJpeg.jpeg");
             } catch (IOException e) {
                 throw new RenditionException("Error writing image", e);
             }
         }
 
-        logger.info("Image not saved");
         return null;
     }
 
