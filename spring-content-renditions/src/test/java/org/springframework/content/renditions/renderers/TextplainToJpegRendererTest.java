@@ -3,6 +3,8 @@ package org.springframework.content.renditions.renderers;
 import com.github.paulcwarren.ginkgo4j.Ginkgo4jConfiguration;
 import com.github.paulcwarren.ginkgo4j.Ginkgo4jRunner;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.junit.runner.RunWith;
 import org.springframework.content.commons.renditions.RenditionProvider;
 
@@ -10,6 +12,7 @@ import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 
 import static com.github.paulcwarren.ginkgo4j.Ginkgo4jDSL.*;
+import static junit.framework.TestCase.fail;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
@@ -17,6 +20,8 @@ import static org.hamcrest.Matchers.*;
 @RunWith(Ginkgo4jRunner.class)
 @Ginkgo4jConfiguration(threads=1)
 public class TextplainToJpegRendererTest {
+
+    private static Log logger = LogFactory.getLog(WordToJpegRenderer.class);
 
     private boolean wrapText = false;
     private RenditionProvider renderer;
@@ -54,11 +59,19 @@ public class TextplainToJpegRendererTest {
                         BeforeEach(()-> {
                             input = new ByteArrayInputStream("Hello Spring Content World!".getBytes());
                         });
-                        It("should produce the correct image", () -> {
+                        FIt("should produce the correct image", () -> {
                             InputStream expected = this.getClass().getResourceAsStream("/textplaintorenderer/single-line.jpeg");
                             assertThat(expected, is(not(nullValue())));
                             assertThat(result, is(not(nullValue())));
-                            assertThat(IOUtils.contentEquals(expected, result), is(true));
+
+                            int i=0;
+                            while ((i = expected.read()) != -1) {
+                                int j = result.read();
+                                System.out.print((char)i);
+                                if (i != j) {
+                                    fail("streams not the same");
+                                }
+                            }//                            assertThat(IOUtils.contentEquals(expected, result), is(true));
                         });
                     });
                     Context("given a multi-line input", () -> {
@@ -104,7 +117,7 @@ public class TextplainToJpegRendererTest {
                     });
                 });
                 Context("given a null input stream", () -> {
-                    It("should get the embedded thumbnail from the XWPFDocument's properties", () -> {
+                    It("should return an error", () -> {
                         assertThat(e, is(not(nullValue())));
                     });
                 });

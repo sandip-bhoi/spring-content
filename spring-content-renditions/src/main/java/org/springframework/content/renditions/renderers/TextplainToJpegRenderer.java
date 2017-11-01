@@ -59,7 +59,6 @@ public class TextplainToJpegRenderer implements RenditionProvider {
         } catch (Exception e) {
             throw new RenditionException("Error creating font", e);
         }
-        logger.info("Font created: " + font.toString());
 
         BufferedImage tempBuffer = new BufferedImage(1, 1, BufferedImage.TYPE_INT_RGB);
         Graphics2D g = tempBuffer.createGraphics();
@@ -78,7 +77,6 @@ public class TextplainToJpegRenderer implements RenditionProvider {
         } catch (Exception e) {
             throw new RenditionException("Error opening input stream", e);
         }
-        logger.info("Buffered reader created from input source");
 
         ArrayList images = new ArrayList();
 
@@ -111,7 +109,6 @@ public class TextplainToJpegRenderer implements RenditionProvider {
 
             AttributedCharacterIterator aci = attribString.getIterator();
             LineBreakMeasurer lbm = new LineBreakMeasurer(aci, fc);
-            logger.info("Line break measurer: " + lbm.toString());
 
             while (lbm.getPosition() < line.length()) {
                 BufferedImage lineBuffer = new BufferedImage(width, lineHeight, BufferedImage.TYPE_INT_ARGB);
@@ -126,7 +123,7 @@ public class TextplainToJpegRenderer implements RenditionProvider {
                 layout.draw(g1, margin, y);
                 images.add(lineBuffer);
                 lineCnt += lineHeight;
-                logger.info("Image added.  Line count: " + lineCnt);
+                logger.info("Line image added.  Line count: " + lineCnt);
 
                 if (lineCnt + lineHeight > 480 || !wrapText) {
                     logger.info("Image overflowed");
