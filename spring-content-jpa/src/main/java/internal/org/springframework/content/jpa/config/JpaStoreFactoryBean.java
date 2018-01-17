@@ -7,11 +7,16 @@ import org.springframework.util.Assert;
 import internal.org.springframework.content.jpa.operations.JpaContentTemplate;
 import internal.org.springframework.content.jpa.repository.DefaultJpaStoreImpl;
 
+import javax.sql.DataSource;
+
 @SuppressWarnings("rawtypes")
 public class JpaStoreFactoryBean extends AbstractStoreFactoryBean {
 
 	@Autowired 
 	private JpaContentTemplate template;
+
+	@Autowired
+	private DataSource dataSource;
 	
 	@Override
 	protected Object getContentStoreImpl() {
