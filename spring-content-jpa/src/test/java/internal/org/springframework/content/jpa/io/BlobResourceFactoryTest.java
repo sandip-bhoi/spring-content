@@ -28,7 +28,7 @@ public class BlobResourceFactoryTest {
                     result = factory.newBlobResource(id);
                 });
                 It("should return a new blob resource", () -> {
-                    assertThat(result, instanceOf(BlobResource.class));
+                    assertThat(result, instanceOf(MySQLBlobResource.class));
                 });
             });
         });
