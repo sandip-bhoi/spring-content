@@ -2,16 +2,24 @@ package internal.org.springframework.content.jpa.io;
 
 import com.github.paulcwarren.ginkgo4j.Ginkgo4jConfiguration;
 import com.github.paulcwarren.ginkgo4j.Ginkgo4jRunner;
+import org.apache.commons.io.IOUtils;
 import org.junit.runner.RunWith;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 import org.powermock.modules.junit4.PowerMockRunnerDelegate;
-import org.springframework.core.io.Resource;
-import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.PreparedStatementCallback;
-import org.springframework.jdbc.core.RowCountCallbackHandler;
+import org.springframework.content.commons.io.FileRemover;
+import org.springframework.content.commons.io.ObservableInputStream;
+import org.springframework.content.jpa.io.BlobResource;
+import org.springframework.dao.DataAccessException;
+import org.springframework.jdbc.core.*;
+import org.springframework.jdbc.datasource.DataSourceTransactionManager;
+import org.springframework.jdbc.datasource.DriverManagerDataSource;
+import org.springframework.transaction.support.TransactionTemplate;
 
-import java.io.InputStream;
+import java.io.*;
+import java.sql.*;
+import java.util.Arrays;
+import java.util.Random;
 
 import static com.github.paulcwarren.ginkgo4j.Ginkgo4jDSL.*;
 import static org.hamcrest.CoreMatchers.*;
@@ -25,9 +33,9 @@ import static org.powermock.api.mockito.PowerMockito.*;
 @PowerMockRunnerDelegate(Ginkgo4jRunner.class)
 @Ginkgo4jConfiguration(threads=1)
 @PrepareForTest(RowCountCallbackHandler.class)
-public class BlobResourceTest {
+public class MySQLBlobResourceTest {
 
-    private Resource resource;
+    private MySQLBlobResource resource;
 
     private String id;
     private JdbcTemplate template;
@@ -37,7 +45,7 @@ public class BlobResourceTest {
     private PreparedStatementCallback handler;
 
     {
-        Describe("BlobResource", () -> {
+        Describe("MySQLBlobResource", () -> {
             BeforeEach(() -> {
                 template = mock(JdbcTemplate.class);
                 templateServices = mock(JdbcTemplateServices.class);
@@ -45,7 +53,7 @@ public class BlobResourceTest {
                 id = "12345";
             });
             JustBeforeEach(() -> {
-                resource = new BlobResource(id, template, templateServices);
+                resource = new MySQLBlobResource(id, template, templateServices);
             });
             Context("#exists", () -> {
                 JustBeforeEach(() -> {
@@ -130,6 +138,68 @@ public class BlobResourceTest {
 
                         assertThat(result, is(not(nullValue())));
                         assertThat(result, instanceOf(InputStream.class));
+                    });
+                });
+            });
+            Context("#getOutputStream", () -> {
+                BeforeEach(() -> {
+                });
+                JustBeforeEach(() -> {
+//                    result = resource.getOutputStream();
+                });
+
+                FIt("set data on the database", () -> {
+                    DriverManagerDataSource ds = new DriverManagerDataSource();
+                    ds.setDriverClassName("org.postgresql.Driver");
+                    ds.setUrl("jdbc:postgresql://localhost:5432/sctest");
+                    ds.setUsername("warrep");
+                    ds.setPassword("");
+
+                    template = new JdbcTemplate(ds);
+
+                    template.execute("DELETE FROM BLOBS");
+
+                    DataSourceTransactionManager manager = new DataSourceTransactionManager(ds);
+                    final TransactionTemplate txn = new TransactionTemplate(manager);
+
+                    BlobResource r = new PostgresBlobResource("32", template, manager);
+                    assertThat(r.exists(), is(false));
+
+                    byte[] testData = new byte[256];
+                    new Random(new java.util.Date().getTime()).nextBytes(testData);
+                    InputStream is = new ByteArrayInputStream(testData);
+
+                    OutputStream os = r.getOutputStream();
+                    IOUtils.copy(is, os);
+//                    IOUtils.closeQuietly(is);
+//                    IOUtils.closeQuietly(os);
+
+                    assertThat(r.exists(), is(false));
+
+//                    System.out.println("waiting");
+//                    Thread.sleep(5000);
+//                    System.out.println("waited ");
+
+                    IOUtils.closeQuietly(is);
+                    IOUtils.closeQuietly(os);
+
+                    while (r.exists() == false) {
+                        System.out.println("sleeping");
+//                        Thread.sleep(1);
+                    }
+                    assertThat(r.exists(), is(true));
+
+//                    final JdbcTemplate db = this.template;
+
+                });
+
+                Context("when the content does not exist in the database", () -> {
+                    It("should write content to the database", () -> {
+                        OutputStream os = (OutputStream)result;
+                        byte[] testData = new byte[5000];
+                        new Random().nextBytes(testData);
+                        ByteArrayInputStream is = new ByteArrayInputStream(testData);
+                        IOUtils.copy(is, os);
                     });
                 });
             });

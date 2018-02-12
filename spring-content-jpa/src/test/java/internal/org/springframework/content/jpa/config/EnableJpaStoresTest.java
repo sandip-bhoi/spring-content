@@ -147,7 +147,6 @@ public class EnableJpaStoresTest {
 		}
 		@Bean
 		public LocalContainerEntityManagerFactoryBean entityManagerFactory() {
-
 			HibernateJpaVendorAdapter vendorAdapter = new HibernateJpaVendorAdapter();
 			vendorAdapter.setDatabase(Database.HSQL);
 			vendorAdapter.setGenerateDdl(true);
@@ -161,7 +160,6 @@ public class EnableJpaStoresTest {
 		}
 		@Bean
 		public PlatformTransactionManager transactionManager() {
-
 			JpaTransactionManager txManager = new JpaTransactionManager();
 			txManager.setEntityManagerFactory(entityManagerFactory().getObject());
 			return txManager;

@@ -1,6 +1,5 @@
 package internal.org.springframework.content.jpa.store;
 
-import internal.org.springframework.content.jpa.operations.JpaContentTemplate;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.dao.DataAccessException;

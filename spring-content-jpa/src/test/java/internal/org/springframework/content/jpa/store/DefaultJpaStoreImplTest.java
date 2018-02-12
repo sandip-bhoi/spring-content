@@ -1,25 +1,19 @@
 package internal.org.springframework.content.jpa.store;
 
 import com.github.paulcwarren.ginkgo4j.Ginkgo4jRunner;
-import internal.org.springframework.content.jpa.io.BlobResource;
+import internal.org.springframework.content.jpa.io.MySQLBlobResource;
 import internal.org.springframework.content.jpa.io.BlobResourceFactory;
-import internal.org.springframework.content.jpa.io.JdbcTemplateServices;
-import internal.org.springframework.content.jpa.operations.JpaContentTemplate;
 import internal.org.springframework.content.jpa.repository.DefaultJpaStoreImpl;
-import internal.org.springframework.content.operations.JpaContentTemplateTest;
 import org.junit.runner.RunWith;
 import org.springframework.content.commons.annotations.ContentId;
 import org.springframework.content.commons.annotations.ContentLength;
-import org.springframework.content.commons.io.FileRemover;
-import org.springframework.content.commons.io.ObservableInputStream;
-import org.springframework.core.io.Resource;
-import org.springframework.jdbc.core.JdbcTemplate;
 
 import javax.sql.DataSource;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.sql.*;
+import java.util.Random;
 
 import static com.github.paulcwarren.ginkgo4j.Ginkgo4jDSL.*;
 import static com.github.paulcwarren.ginkgo4j.Ginkgo4jDSL.BeforeEach;
@@ -28,8 +22,6 @@ import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
-import static org.hamcrest.core.IsInstanceOf.instanceOf;
-import static org.mockito.Matchers.anyObject;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -55,14 +47,14 @@ public class DefaultJpaStoreImplTest {
     private Blob blob;
 
     private BlobResourceFactory blobResourceFactory;
-    private BlobResource resource;
+    private MySQLBlobResource resource;
 
     {
         Describe("DefaultJpaStoreImpl", () -> {
             Context("#getContent", () -> {
                 BeforeEach(() -> {
                     blobResourceFactory = mock(BlobResourceFactory.class);
-                    resource = mock(BlobResource.class);
+                    resource = mock(MySQLBlobResource.class);
 
                     entity = new TestEntity(12345);
 
@@ -99,9 +91,12 @@ public class DefaultJpaStoreImplTest {
             Context("#setContent", () -> {
                 BeforeEach(() -> {
                     blobResourceFactory = mock(BlobResourceFactory.class);
-                    resource = mock(BlobResource.class);
+                    resource = mock(MySQLBlobResource.class);
 
                     entity = new TestEntity(12345);
+                    byte[] content = new byte[5000];
+                    new Random().nextBytes(content);
+                    inputStream = new ByteArrayInputStream(content);
 
                     when(blobResourceFactory.newBlobResource(entity.getContentId().toString())).thenReturn(resource);
                 });
@@ -109,8 +104,14 @@ public class DefaultJpaStoreImplTest {
                     store = new DefaultJpaStoreImpl(blobResourceFactory);
                     store.setContent(entity, inputStream);
                 });
-                It("should use the blob resource factory to create a blob resource for the entity", () -> {
-                    verify(blobResourceFactory).newBlobResource(entity.getContentId().toString());
+                Context("when the row does not exist", () -> {
+                    BeforeEach(() -> {
+
+                    });
+                    It("should use the blob resource factory to create a blob resource for the entity", () -> {
+                        verify(blobResourceFactory).newBlobResource(entity.getContentId().toString());
+
+                    });
                 });
             });
         });

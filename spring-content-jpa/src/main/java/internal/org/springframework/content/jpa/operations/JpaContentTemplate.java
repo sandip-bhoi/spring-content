@@ -10,7 +10,7 @@ import java.sql.Statement;
 
 import javax.sql.DataSource;
 
-import internal.org.springframework.content.jpa.io.BlobResource;
+import internal.org.springframework.content.jpa.io.MySQLBlobResource;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -25,7 +25,6 @@ import org.springframework.content.commons.utils.BeanUtils;
 import internal.org.springframework.content.jpa.utils.InputStreamEx;
 import org.springframework.core.io.Resource;
 import org.springframework.dao.DataAccessException;
-import org.springframework.jdbc.core.ConnectionCallback;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.PreparedStatementCallback;
 import org.springframework.jdbc.core.PreparedStatementCreator;
@@ -49,7 +48,7 @@ public class JpaContentTemplate implements InitializingBean {
     }
 
     public Resource getResource(String id) {
-        return new BlobResource(id, template);
+        return new MySQLBlobResource(id, template);
     }
 
     @Override
