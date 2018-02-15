@@ -3,6 +3,7 @@ package internal.org.springframework.content.jpa.io;
 import internal.org.springframework.content.jpa.utils.InputStreamEx;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.content.jpa.io.BlobResource;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.WritableResource;
 import org.springframework.dao.DataAccessException;
@@ -16,7 +17,7 @@ import java.net.URI;
 import java.net.URL;
 import java.sql.*;
 
-public class MySQLBlobResource implements Resource, WritableResource {
+public class MySQLBlobResource implements BlobResource {
 
     private static Log logger = LogFactory.getLog(MySQLBlobResource.class);
 

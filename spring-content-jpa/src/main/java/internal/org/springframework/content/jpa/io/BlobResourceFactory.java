@@ -2,6 +2,7 @@ package internal.org.springframework.content.jpa.io;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.content.jpa.io.BlobResource;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 public class BlobResourceFactory {
@@ -16,7 +17,7 @@ public class BlobResourceFactory {
         this.templateServices = templateServices;
     }
 
-    public MySQLBlobResource newBlobResource(String id) {
+    public BlobResource newBlobResource(String id) {
         return new MySQLBlobResource(id, template, templateServices);
     }
 }

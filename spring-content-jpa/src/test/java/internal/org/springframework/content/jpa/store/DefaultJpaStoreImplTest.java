@@ -4,9 +4,13 @@ import com.github.paulcwarren.ginkgo4j.Ginkgo4jRunner;
 import internal.org.springframework.content.jpa.io.MySQLBlobResource;
 import internal.org.springframework.content.jpa.io.BlobResourceFactory;
 import internal.org.springframework.content.jpa.repository.DefaultJpaStoreImpl;
+import org.hamcrest.CoreMatchers;
 import org.junit.runner.RunWith;
 import org.springframework.content.commons.annotations.ContentId;
 import org.springframework.content.commons.annotations.ContentLength;
+import org.springframework.content.jpa.io.BlobResource;
+import org.springframework.content.jpa.io.BlobResourceLoader;
+import org.springframework.core.io.Resource;
 
 import javax.sql.DataSource;
 import java.io.ByteArrayInputStream;
@@ -22,6 +26,7 @@ import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
+import static org.hamcrest.core.IsInstanceOf.instanceOf;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -47,10 +52,62 @@ public class DefaultJpaStoreImplTest {
     private Blob blob;
 
     private BlobResourceFactory blobResourceFactory;
-    private MySQLBlobResource resource;
+    private BlobResourceLoader blobResourceLoader;
+    private Resource resource;
+
+    private String id;
 
     {
         Describe("DefaultJpaStoreImpl", () -> {
+            JustBeforeEach(() -> {
+                store = new DefaultJpaStoreImpl(blobResourceFactory);
+            });
+
+            Describe("Store", () -> {
+                BeforeEach(() -> {
+                    blobResourceLoader = mock(BlobResourceLoader.class);
+                });
+                JustBeforeEach(() -> {
+                    store = new DefaultJpaStoreImpl(null, blobResourceLoader);
+                });
+                Context("#getResource", () -> {
+                    Context("given an id", () -> {
+                        BeforeEach(() -> {
+                            id = "1";
+                        });
+                        JustBeforeEach(() -> {
+                            resource = store.getResource(id);
+                        });
+                        FIt("should use the blob resource loader to load a blob resource", () -> {
+                            verify(blobResourceLoader).getResource(id);
+                        });
+                    });
+                });
+                Context("#associate", () -> {
+                    BeforeEach(() -> {
+                        id = "12345-67890";
+
+                        entity = new TestEntity();
+
+                        resource = mock(BlobResource.class);
+                        when(blobResourceLoader.getResource(eq("12345-67890"))).thenReturn(resource);
+                        when(resource.contentLength()).thenReturn(20L);
+                    });
+                    JustBeforeEach(() -> {
+                        store.associate(entity, id);
+                    });
+                    It("should use the conversion service to get a resource path", () -> {
+                        verify(blobResourceLoader).getResource(eq("12345-67890"));
+                    });
+                    It("should set the entity's content ID attribute", () -> {
+                        assertThat(entity.getContentId(), CoreMatchers.is("12345-67890"));
+                    });
+                    It("should set the entity's content length attribute", () -> {
+                        assertThat(entity.getContentLen(), CoreMatchers.is(20L));
+                    });
+                });
+            });
+
             Context("#getContent", () -> {
                 BeforeEach(() -> {
                     blobResourceFactory = mock(BlobResourceFactory.class);
@@ -58,10 +115,9 @@ public class DefaultJpaStoreImplTest {
 
                     entity = new TestEntity(12345);
 
-                    when(blobResourceFactory.newBlobResource(entity.getContentId().toString())).thenReturn(resource);
+                    when(blobResourceFactory.newBlobResource(entity.getContentId().toString())).thenReturn((BlobResource)resource);
                 });
                 JustBeforeEach(() -> {
-                    store = new DefaultJpaStoreImpl(blobResourceFactory);
                     inputStream = store.getContent(entity);
                 });
                 Context("given content", () -> {
@@ -98,7 +154,7 @@ public class DefaultJpaStoreImplTest {
                     new Random().nextBytes(content);
                     inputStream = new ByteArrayInputStream(content);
 
-                    when(blobResourceFactory.newBlobResource(entity.getContentId().toString())).thenReturn(resource);
+                    when(blobResourceFactory.newBlobResource(entity.getContentId().toString())).thenReturn((BlobResource)resource);
                 });
                 JustBeforeEach(() -> {
                     store = new DefaultJpaStoreImpl(blobResourceFactory);
