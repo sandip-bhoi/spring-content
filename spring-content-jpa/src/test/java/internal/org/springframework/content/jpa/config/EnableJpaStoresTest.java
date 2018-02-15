@@ -69,6 +69,9 @@ public class EnableJpaStoresTest {
 				It("should have a shema manager bean", () -> {
 					assertThat(context.getBean("jpaStoreSchemaManager"), is(not(nullValue())));
 				});
+				It("should have a blob resource loader", () -> {
+					assertThat(context.getBean("blobResourceLoader"), is(not(nullValue())));
+				});
 			});
 			Context("given a context with an empty configuration", () -> {
 				BeforeEach(() -> {
@@ -108,6 +111,9 @@ public class EnableJpaStoresTest {
 				});
 				It("should have a shema manager bean", () -> {
 					assertThat(context.getBean("jpaStoreSchemaManager"), is(not(nullValue())));
+				});
+				It("should have a blob resource loader", () -> {
+					assertThat(context.getBean("blobResourceLoader"), is(not(nullValue())));
 				});
 			});
 		});
