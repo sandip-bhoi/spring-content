@@ -20,15 +20,15 @@ public class JpaStoreConfiguration {
     @Autowired
     private DataSource dataSource;
 
-    @Bean
-    public JpaStoreSchemaManager jpaStoreSchemaManager(DataSource ds) {
-        return new JpaStoreSchemaManager(ds);
-    }
-
-    @PostConstruct
-    public void schemaSetup() {
-        jpaStoreSchemaManager(dataSource).create();
-    }
+//    @Bean
+//    public JpaStoreSchemaManager jpaStoreSchemaManager(DataSource ds) {
+//        return new JpaStoreSchemaManager(ds);
+//    }
+//
+//    @PostConstruct
+//    public void schemaSetup() {
+//        jpaStoreSchemaManager(dataSource).create();
+//    }
 
     @Bean
     public DelegatingBlobResourceLoader blobResourceLoader(DataSource ds, List<BlobResourceLoader> loaders) {

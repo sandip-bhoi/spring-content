@@ -66,9 +66,6 @@ public class EnableJpaStoresTest {
 				It("should have a jpaContentTemplate bean", () -> {
 					assertThat(context.getBean("jpaContentTemplate"), is(not(nullValue())));
 				});
-				It("should have a shema manager bean", () -> {
-					assertThat(context.getBean("jpaStoreSchemaManager"), is(not(nullValue())));
-				});
 				It("should have a blob resource loader", () -> {
 					assertThat(context.getBean("blobResourceLoader"), is(not(nullValue())));
 				});
@@ -108,9 +105,6 @@ public class EnableJpaStoresTest {
 				});
 				It("should have a jpaContentTemplate bean", () -> {
 					assertThat(context.getBean("jpaContentTemplate"), is(not(nullValue())));
-				});
-				It("should have a shema manager bean", () -> {
-					assertThat(context.getBean("jpaStoreSchemaManager"), is(not(nullValue())));
 				});
 				It("should have a blob resource loader", () -> {
 					assertThat(context.getBean("blobResourceLoader"), is(not(nullValue())));
