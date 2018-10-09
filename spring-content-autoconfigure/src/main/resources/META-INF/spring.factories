@@ -6,6 +6,7 @@ internal.org.springframework.content.mongo.boot.autoconfigure.MongoContentAutoCo
 internal.org.springframework.content.rest.boot.autoconfigure.ContentRestAutoConfiguration,\
 internal.org.springframework.content.rest.boot.autoconfigure.HypermediaAutoConfiguration,\
 internal.org.springframework.content.s3.boot.autoconfigure.S3ContentAutoConfiguration,\
+internal.org.springframework.content.gcs.boot.autoconfigure.GCSContentAutoConfiguration,\
 internal.org.springframework.content.solr.boot.autoconfigure.SolrAutoConfiguration,\
 internal.org.springframework.content.solr.boot.autoconfigure.SolrExtensionAutoConfiguration,\
 internal.org.springframework.content.renditions.boot.autoconfigure.RenditionsContentAutoConfiguration
